@@ -35,8 +35,9 @@
 #' `"logit"`, signalling the metric in which ability is estimated.
 #' @param prior_mean A string specifying a column name in `data`
 #' with the mean of the prior for the D-score calculation.
-#' The default `prior_mean = ".gcdg"` calculates an age-dependent
-#' prior mean internally according to function
+#' The default depends on the `key`. If `key == "dutch"` then
+#' `prior_mean = "dutch"`, else it is `".gcdg"`. These settings
+#' calculate an age-dependent prior mean internally according to function
 #' `dscore:::count_mu_gcdg()`.
 #' The choice `prior_mean = ".dutch"`
 #' calculates `prior_mean` from the Count model coded in
@@ -53,9 +54,9 @@
 #' (`qp = -10:100`) is suitable for age range 0-4 years.
 #' @param population A string describing the population. Currently
 #' supported are `"dutch"` and `"gcdg"` (default).
-#' @param dec Integer specifying the number of decimals for
-#' rounding the ability estimates and the DAZ. The default is
-#' `dec = 3`.
+#' @param dec A vector of two integers specifying the number of
+#' decimals for rounding the D-score and DAZ, respectively.
+#' The default is `dec = c(2L, 3L)`.
 #' @return
 #' The `dscore()` function returns a `data.frame` with
 #' `nrow(data)` rows and the following columns:
@@ -161,12 +162,12 @@ dscore <- function(data,
                    key = "gsed",
                    itembank = dscore::builtin_itembank,
                    metric = c("dscore", "logit"),
-                   prior_mean = ".gcdg",
+                   prior_mean = ifelse(key == "dutch", ".dutch", ".gcdg"),
                    prior_sd = NULL,
                    transform = NULL,
                    qp = -10:100,
                    population = key,
-                   dec = 3L) {
+                   dec = c(2L, 3L)) {
   xunit <- match.arg(xunit)
   metric <- match.arg(metric)
   calc_dscore(
@@ -190,12 +191,12 @@ dscore_posterior <- function(data,
                              key = "gsed",
                              itembank = dscore::builtin_itembank,
                              metric = c("dscore", "logit"),
-                             prior_mean = ".gcdg",
+                             prior_mean = ifelse(key == "dutch", ".dutch", ".gcdg"),
                              prior_sd = NULL,
                              transform = NULL,
                              qp = -10:100,
                              population = key,
-                             dec = 3L) {
+                             dec = c(2L, 3L)) {
   xunit <- match.arg(xunit)
   metric <- match.arg(metric)
   calc_dscore(
@@ -231,10 +232,10 @@ calc_dscore <- function(data, items, xname, xunit,
   # get decimal age
   if (!xname %in% names(data)) stop("Variable `", xname, "` not found")
   a <- switch(xunit,
-    decimal = round(data[[xname]], 3L),
-    months  = round(data[[xname]] / 12, 3L),
-    days    = round(data[[xname]] / 365.25, 3L),
-    rep(NA, nrow(data))
+              decimal = round(data[[xname]], 4L),
+              months  = round(data[[xname]] / 12, 4L),
+              days    = round(data[[xname]] / 365.25, 4L),
+              rep(NA, nrow(data))
   )
 
   # obtain difficulty estimates
@@ -329,8 +330,8 @@ calc_dscore <- function(data, items, xname, xunit,
         data4[i, ] <- f
       } else {
         data4[i, ] <- dnorm(qp,
-          mean = as.double(data2[i, "mu"]),
-          sd = as.double(data2[i, "sd"])
+                            mean = as.double(data2[i, "mu"]),
+                            sd = as.double(data2[i, "sd"])
         )
       }
     }
@@ -344,7 +345,7 @@ calc_dscore <- function(data, items, xname, xunit,
       group_by(.data$.rownum, .data$a) %>%
       summarise(
         n = n(),
-        p = round(mean(.data$score), digits = dec),
+        p = round(mean(.data$score), digits = 4L),
         x = list(qp),
         w = list(calculate_posterior(
           scores = .data$score,
@@ -367,13 +368,12 @@ calc_dscore <- function(data, items, xname, xunit,
       left_join(data4, by = ".rownum") %>%
       mutate(
         n = recode(.data$n, .missing = 0L),
+        d = round(.data$d, digits = dec[1L]),
         daz = daz(
           d = .data$d, x = .data$a,
           reference = get_reference(population),
-          dec = dec
-        ),
-        daz = ifelse(is.nan(.data$daz), NA, .data$daz),
-        d = round(.data$d, digits = dec)
+          dec = dec[2L]),
+        daz = ifelse(is.nan(.data$daz), NA, .data$daz)
       ) %>%
       select(.data$a, .data$n, .data$p, .data$d, .data$sem, .data$daz)
     return(data5)

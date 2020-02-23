@@ -13,12 +13,12 @@ dscore(
   key = "gsed",
   itembank = dscore::builtin_itembank,
   metric = c("dscore", "logit"),
-  prior_mean = ".gcdg",
+  prior_mean = ifelse(key == "dutch", ".dutch", ".gcdg"),
   prior_sd = NULL,
   transform = NULL,
   qp = -10:100,
   population = key,
-  dec = 3L
+  dec = c(2L, 3L)
 )
 
 dscore_posterior(
@@ -29,12 +29,12 @@ dscore_posterior(
   key = "gsed",
   itembank = dscore::builtin_itembank,
   metric = c("dscore", "logit"),
-  prior_mean = ".gcdg",
+  prior_mean = ifelse(key == "dutch", ".dutch", ".gcdg"),
   prior_sd = NULL,
   transform = NULL,
   qp = -10:100,
   population = key,
-  dec = 3L
+  dec = c(2L, 3L)
 )
 }
 \arguments{
@@ -75,8 +75,9 @@ default.}
 
 \item{prior_mean}{A string specifying a column name in \code{data}
 with the mean of the prior for the D-score calculation.
-The default \code{prior_mean = ".gcdg"} calculates an age-dependent
-prior mean internally according to function
+The default depends on the \code{key}. If \code{key == "dutch"} then
+\code{prior_mean = "dutch"}, else it is \code{".gcdg"}. These settings
+calculate an age-dependent prior mean internally according to function
 \code{dscore:::count_mu_gcdg()}.
 The choice \code{prior_mean = ".dutch"}
 calculates \code{prior_mean} from the Count model coded in
@@ -98,9 +99,9 @@ This vector should span the range of all D-score values. The default
 \item{population}{A string describing the population. Currently
 supported are \code{"dutch"} and \code{"gcdg"} (default).}
 
-\item{dec}{Integer specifying the number of decimals for
-rounding the ability estimates and the DAZ. The default is
-\code{dec = 3}.}
+\item{dec}{A vector of two integers specifying the number of
+decimals for rounding the D-score and DAZ, respectively.
+The default is \code{dec = c(2L, 3L)}.}
 }
 \value{
 The \code{dscore()} function returns a \code{data.frame} with
