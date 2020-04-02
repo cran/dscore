@@ -1,3 +1,9 @@
+# dscore 1.2.0
+
+* Uses explicit `drop = TRUE` to account for new behavior in `tibble 3.0.0`
+* Adds a facility to create a dynamic (on-the-fly) itemtable from 
+specified item names in `get_itemtable()`.
+
 # dscore 1.1.0
 
 * The default rounding is now 2 (D-score), 3 (DAZ). Fixed rounding are now

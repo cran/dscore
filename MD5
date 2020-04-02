@@ -1,6 +1,6 @@
-002926fe96ced9b4bf169110cb1c6f12 *DESCRIPTION
+0dcb2d52d9cd9fd126129b9939ee4fb6 *DESCRIPTION
 39bcdc0626064fad9b2a167ce36bf481 *NAMESPACE
-e676c16b74086ed9bb1991da28f86dc2 *NEWS.md
+98a625782bdea0dda164d2361308bd0d *NEWS.md
 46df8e04d02474d1734994389449183f *R/RcppExports.R
 420079c1abf0ed1423932e296c6e63aa *R/builtin_itembank.R
 9c30fabdbd2ea9cef5f35f51a6839a61 *R/builtin_itemtable.R
@@ -9,10 +9,10 @@ c5666643f1756a25b3b338250d8feb9d *R/count_mu.R
 b813b1aec3ff43f4ab92d0a678d26f6d *R/daz.R
 d3eaeefea6ecf8c1e8f41257c8c4af15 *R/decompose_itemnames.R
 b33e0d95a6bc0c38e6e1d42c4e7da7f6 *R/dscore-package.R
-52953980144635fa13d10dc2d0e65848 *R/dscore.R
+ba1118aad2d9062bc8b44bfe90b9532a *R/dscore.R
 6cf4e7968aaf0f5234c27eba00ec1727 *R/get_age_equivalent.R
 e5e725e7c6f7efea48c855781c21f574 *R/get_itemnames.R
-d6e7eab158b5d5877013aa6554f14a85 *R/get_itemtable.R
+5dee8ffbe0df0f2e7a30eeba1e8f4dcc *R/get_itemtable.R
 731ae6fa70ae2bd7a9556947f9b6a42f *R/get_labels.R
 9ea4f47e5afed37a4bcf41e92f885bda *R/get_reference.R
 a5043d9e930439cc53ea69dec9b65cb3 *R/get_tau.R
@@ -20,7 +20,7 @@ a5043d9e930439cc53ea69dec9b65cb3 *R/get_tau.R
 769071d4516d01324dbe05618df5daed *R/milestones.R
 d7f73fd551f21a3ff61d8f732a2498ae *R/rename_gcdg_gsed.R
 9532513f8702434a0799daadcdd7b855 *R/sort_itemnames.R
-d84d7c22f1bbb9ef7626d8cda7c81c38 *README.md
+baec86759800afb86c4263526474705e *README.md
 840696d6f5611ca425a00533c532ec2d *build/vignette.rds
 1ffc1c95a9f5bcd711e49416de8ea9a1 *data/builtin_itembank.rda
 f9f946b92c5fbbc85a67dd03a9d63ff5 *data/builtin_itemtable.rda
@@ -30,9 +30,9 @@ f9f946b92c5fbbc85a67dd03a9d63ff5 *data/builtin_itemtable.rda
 8ed15a5ed7300eb74543c59b4c3dbc47 *inst/doc/start.R
 e8ff61ae6515729930ad4d351f9b1904 *inst/doc/start.Rmd
 3b13a3c86e3286a40de96b4c247bd3ef *inst/doc/start.html
-f1a5d52ebfa8e805ade0ff2c5b95c5d6 *man/builtin_itembank.Rd
-4ffc07fba708c5001f16c12ff702b44a *man/builtin_itemtable.Rd
-f83280752bb831dfb2b535a1d2eefd03 *man/builtin_references.Rd
+dcea18efbb3d53b34c4fd73805fe16d4 *man/builtin_itembank.Rd
+639e8e465d763d1226b2945aebf17148 *man/builtin_itemtable.Rd
+375c03cd4875e4d072e363386a55affe *man/builtin_references.Rd
 e94a309472b0c1799e7974f10fafa1e9 *man/calculate_posterior.Rd
 a9b170dd18c7fbd1a10188d4f9ca9a13 *man/count_mu_dutch.Rd
 8426e324cf9bc7c97f9e16832a5024ca *man/count_mu_gcdg.Rd
@@ -46,11 +46,11 @@ e4e2074acb72a6de057f04e99821431d *man/decompose_itemnames.Rd
 74abb117baa822685ee1c47b7df5e6f5 *man/figures/README-graphkey-1.png
 7dd8119eeffa1e84756f29a3e86be7c8 *man/get_age_equivalent.Rd
 f2711370f4bd0a07458530b8d37cb03c *man/get_itemnames.Rd
-851ac7045c9fcd235b879782b0b9f0f4 *man/get_itemtable.Rd
+468b4c15f094b80be95580235be74962 *man/get_itemtable.Rd
 bf05d9f16a696cf5270940ae59116d85 *man/get_labels.Rd
 6c9593258e6b3dcc87ef73d3eba686e9 *man/get_reference.Rd
 5f3ff1a6cb19c15897ba9087695ce053 *man/get_tau.Rd
-4ef9758fe8ee0a93a385b27f4de2fa69 *man/milestones.Rd
+fb0ebac031792d22fa800dfc023c3347 *man/milestones.Rd
 e4bc1ae8faa3001d43eb4a232c19f087 *man/normalize.Rd
 1c3f9cf5cd1936f1826afd1dbf852d4b *man/posterior.Rd
 30c0daa3eb698d277a26651daa471fca *man/rename_gcdg_gsed.Rd
