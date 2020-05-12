@@ -10,11 +10,11 @@ A \code{data.frame} with variables:\tabular{ll}{
    \code{key} \tab String indicating a specific Rasch model, either \code{"gsed"}, \code{"gcdg"} or \code{"dutch"} \cr
    \code{item} \tab Item name, gsed lexicon \cr
    \code{tau} \tab Difficulty estimate \cr
-   \code{instrument} \tab Instrument code, 3 letters \cr
-   \code{domain} \tab Domain code, 2 letter \cr
-   \code{mode} \tab Mode code, 1 letter \cr
-   \code{number} \tab Item number, 3 numbers \cr
    \code{label} \tab Label (English) \cr
+   \code{instrument} \tab Instrument code \cr
+   \code{domain} \tab Domain code \cr
+   \code{mode} \tab Administration mode \cr
+   \code{number} \tab Item number \cr
 }
 }
 \usage{
@@ -23,7 +23,7 @@ builtin_itembank
 \description{
 A data frame with administrative information per item. Includes
 only items that are part of a Rasch model.
-See \code{\link[=builtin_itemtable]{builtin_itemtable()}} for an overview of all currently
+See \link[dscore:builtin_itemtable]{dscore::builtin_itemtable} for an overview of all currently
 defined items.
 }
 \examples{

@@ -1,7 +1,7 @@
 Package: dscore
 Type: Package
 Title: D-Score for Child Development
-Version: 1.2.0
+Version: 1.3.0
 Authors@R: c(person("Stef", "van Buuren", email = "stef.vanbuuren@tno.nl", role = c("cre", "aut")), 
              person("Iris", "Eekhout", email = "iris.eekhout@tno.nl", role = "aut"),
              person("Arjan", "Huizing", email = "arjan.huizing@tno.nl", role = "aut"))
@@ -17,7 +17,8 @@ Description: The D-score is a quantitative measure of child development.
     The user can calculate DAZ using 'dutch' and 'gcdg' age-conditional 
     references.
 Depends: R (>= 3.5)
-Imports: dplyr (>= 0.8.2), Rcpp, stats, stringr, tidyr (>= 1.0.0)
+Imports: dplyr (>= 0.8.2), Rcpp, stats, stringr, tidyr (>= 1.0.0),
+        tidyselect
 LinkingTo: Rcpp, RcppArmadillo
 Suggests: ggplot2, kableExtra, knitr, lme4, rmarkdown, sirt, testthat
 Encoding: UTF-8
@@ -31,10 +32,10 @@ URL: https://github.com/stefvanbuuren/dscore,
         https://stefvanbuuren.name/dbook1/
 BugReports: https://github.com/stefvanbuuren/dscore/issues
 Copyright: Stef van Buuren, Iris Eekhout, Arjan Huizing
-Packaged: 2020-04-02 10:02:07 UTC; buurensv
+Packaged: 2020-05-12 15:06:31 UTC; buurensv
 Author: Stef van Buuren [cre, aut],
   Iris Eekhout [aut],
   Arjan Huizing [aut]
 Maintainer: Stef van Buuren <stef.vanbuuren@tno.nl>
 Repository: CRAN
-Date/Publication: 2020-04-02 10:20:02 UTC
+Date/Publication: 2020-05-12 15:20:03 UTC
