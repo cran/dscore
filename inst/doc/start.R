@@ -8,7 +8,7 @@
 library(dscore)
 ib <- builtin_itembank %>% 
   filter(key == "gsed") %>% 
-  mutate(a = get_age_equivalent(items = item, pct = 50)$a * 12) %>% 
+  mutate(a = get_age_equivalent(items = item, pct = 50, itembank = builtin_itembank)$a * 12) %>% 
   select(a, instrument, label) %>% 
   na.omit()
   

@@ -1,3 +1,16 @@
+# dscore 1.4.0
+
+### Major changes
+
+* Updates tau estimates for Mullen items in itembank covering a much wider age range: 65 out of the 85 Mullen items from previous itembank version have new tau estimates; 20 items are removed. 
+* Updates itembank with new Mullen items. There are 73 new Mullen items added to the new itembank. In total there are now 139 Mullen items in the itembank, estimates are based on PROVIDE and BAMBAM data.
+* Moves sources to organisation repository `D-score/dscore` for increased visibility
+
+### Minor changes
+
+* Update external links
+* Repairs six incorrect BDS numbers in `data-raw/data/bds)edited.csv`
+
 # dscore 1.3.0
 
 * Adds equate groups translated from the `ddata` package to `builtin_itemtable`
@@ -29,5 +42,5 @@ from taking the log of negative ages.
 # dscore 1.0.0
 
 * Hi, welcome to `dscore 1.0.0`! For the development history, see
-<https://github.com/stefvanbuuren/dscore>
+<https://github.com/D-score/dscore>
 * Added a `NEWS.md` file to track changes to the package.
