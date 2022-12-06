@@ -23,8 +23,8 @@ normalize <- function(d, qp) {
 #'
 #' @details
 #' This function assumes that the difficulties have been estimated by
-#' a binary Rasch model (e.g. by
-#' [sirt::rasch.pairwise.itemcluster()]).
+#' a binary Rasch model, e.g. by `rasch.pairwise.itemcluster()` of
+#' the `sirt` package.
 #'
 #' @aliases posterior
 #' @param score Integer, either 0 (fail) and 1 (pass)
@@ -34,13 +34,15 @@ normalize <- function(d, qp) {
 #' @return A vector of length `length(prior)`
 #' @author Stef van Buuren, Arjan Huizing, 2020
 #' @note: Internal function
-#' @seealso [dscore()], [sirt::rasch.pairwise.itemcluster()]
+#' @seealso [dscore()]
 posterior <- function(score, tau, prior, qp) {
     .Call('_dscore_posterior', PACKAGE = 'dscore', score, tau, prior, qp)
 }
 
 #' Calculate posterior of ability
 #'
+#' If the tauj is not within the range rello - relhi from the
+#' dynamic EAP, the procedure ignores the score of item j.
 #' @param scores A vector with PASS/FAIL observations.
 #' Scores are coded numerically as `pass = 1` and `fail = 0`.
 #' @param tau A vector containing the item difficulties for the item
@@ -49,17 +51,19 @@ posterior <- function(score, tau, prior, qp) {
 #' @param qp Numeric vector of equally spaced quadrature points.
 #' @param mu Numeric scalar. The mean of the prior.
 #' @param sd Numeric scalar. Standard deviation of the prior.
+#' @param relhi Positive numeric scalar. Upper end of the relevance interval
+#' @param rello Negative numeric scalar. Lower end of the relevance interval
 #' @author Stef van Buuren, Arjan Huizing, 2020
 #' @return A `list` with three elements:
 #'
 #' | Name | Label |
 #' | --- | --------- |
 #' `eap` | Mean of the posterior
-#' `gp`  | Vcetor of quadrature points
+#' `gp`  | Vector of quadrature points
 #' `posterior` | Vector with posterior distribution.
 #'
 #' Since `dscore V40.1` the function does not return the `"start"` element.
-calculate_posterior <- function(scores, tau, qp, mu, sd) {
-    .Call('_dscore_calculate_posterior', PACKAGE = 'dscore', scores, tau, qp, mu, sd)
+calculate_posterior <- function(scores, tau, qp, mu, sd, relhi, rello) {
+    .Call('_dscore_calculate_posterior', PACKAGE = 'dscore', scores, tau, qp, mu, sd, relhi, rello)
 }
 

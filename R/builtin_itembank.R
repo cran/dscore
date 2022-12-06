@@ -5,12 +5,16 @@
 #' See [dscore::builtin_itemtable] for an overview of all currently
 #' defined items.
 #'
+#' In general, one can only compare D-score calculated with the same
+#' key. The current recommendation for new projects is to choose
+#' key `gsed2212`.
+#'
 #' @docType data
 #' @format A `data.frame` with variables:
 #'
 #' | Name | Label |
 #' | --- | --------- |
-#' | `key` | String indicating a specific Rasch model, either `"gsed"`, `"gcdg"` or `"dutch"`|
+#' | `key` | String indicating a specific Rasch model (the key) |
 #' | `item` | Item name, gsed lexicon |
 #' | `tau`  | Difficulty estimate |
 #' | `label` | Label (English) |
@@ -18,6 +22,12 @@
 #' | `domain`     | Domain code |
 #' | `mode`       | Administration mode |
 #' | `number`     | Item number |
+#'
+#' @note
+#' Last update:
+#'  - Dec 01, 2022 - Overwrite labels of gto by correct item order.
+#'  - Dec 05, 2022 - Adds key `gsed2212`, adding instruments `gl1` and `gs1`, and
+#'    defining correct order for `gto`
 #'
 #' @examples
 #' head(builtin_itembank)

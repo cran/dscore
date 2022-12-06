@@ -7,8 +7,10 @@
 ## ----graphkey, fig.width = 7, fig.height = 5, echo = FALSE--------------------
 library(dscore)
 ib <- builtin_itembank %>% 
-  filter(key == "gsed") %>% 
-  mutate(a = get_age_equivalent(items = item, pct = 50, itembank = builtin_itembank)$a * 12) %>% 
+  filter(key == "gsed2212") %>% 
+  mutate(a = get_age_equivalent(items = item, pct = 50, 
+                                itembank = builtin_itembank)$a,
+         a = a * 12) %>% 
   select(a, instrument, label) %>% 
   na.omit()
   
@@ -81,7 +83,7 @@ ggplot(md, aes(x = a, y = d, group = id, color = sex)) +
   annotate("line", x = r$age, y = r$SD0, lwd = 0.5, alpha = 0.2, color = "green") +
   coord_cartesian(xlim = c(0, 2.5)) +
   ylab(expression(paste(italic(D), "-score", sep = ""))) +
-  xlab("Age (in years)") +
+  xlab("Age (in years)")+
   scale_color_brewer(palette = "Set1") +
   geom_line(lwd = 0.1) +
   geom_point(size = 1)

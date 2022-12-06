@@ -7,7 +7,7 @@
 \format{
 A \code{data.frame} with variables:\tabular{ll}{
    Name \tab Label \cr
-   \code{key} \tab String indicating a specific Rasch model, either \code{"gsed"}, \code{"gcdg"} or \code{"dutch"} \cr
+   \code{key} \tab String indicating a specific Rasch model (the key) \cr
    \code{item} \tab Item name, gsed lexicon \cr
    \code{tau} \tab Difficulty estimate \cr
    \code{label} \tab Label (English) \cr
@@ -25,6 +25,19 @@ A data frame with administrative information per item. Includes
 only items that are part of a Rasch model.
 See \link{builtin_itemtable} for an overview of all currently
 defined items.
+}
+\details{
+In general, one can only compare D-score calculated with the same
+key. The current recommendation for new projects is to choose
+key \code{gsed2212}.
+}
+\note{
+Last update:
+\itemize{
+\item Dec 01, 2022 - Overwrite labels of gto by correct item order.
+\item Dec 05, 2022 - Adds key \code{gsed2212}, adding instruments \code{gl1} and \code{gs1}, and
+defining correct order for \code{gto}
+}
 }
 \examples{
 head(builtin_itembank)

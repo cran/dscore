@@ -7,11 +7,12 @@
 \format{
 A \code{data.frame} with 265 rows and 17 variables:\tabular{ll}{
    Name \tab Label \cr
-   \code{pop} \tab Population, either \code{"dutch"} or \code{"gcdg"} \cr
+   \code{pop} \tab Population, either \code{"dutch"}, \code{"gcdg"} or \code{"phase1"} \cr
    \code{age} \tab Decimal age in years \cr
    \code{mu} \tab M-curve, median D-score, P50 \cr
    \code{sigma} \tab S-curve, spread expressed as coefficient of variation \cr
-   \code{nu} \tab L-curve, the lambda coefficient of the LMS model for skewness \cr
+   \code{nu} \tab L-curve, the lambda coefficient of the LMS/BCT model for skewness \cr
+   \code{tau} \tab Kurtosis parameter in the BCT model \cr
    \code{P3} \tab P3 percentile \cr
    \code{P10} \tab P10 percentile \cr
    \code{P25} \tab P25 percentile \cr
@@ -32,8 +33,9 @@ builtin_references
 \description{
 A data frame containing the age-dependent distribution of the
 D-score for children aged 0-5 years. The distribution is modelled
-after the LMS distribution (Cole & Green, 1992), and is equal for
-both boys and girls. The LMS values can be used to graph
+after the LMS distribution (Cole & Green, 1992) or BCT model
+(Stasinopoulos & Rigby, 2022) and is equal for
+both boys and girls. The LMS/BCT values can be used to graph
 reference charts and to calculate age-conditonal Z-scores, also
 known as DAZ.
 }
@@ -42,6 +44,9 @@ The \code{"dutch"} references were calculated from the SMOCC data, and cover
 age range 0-2.5 years (van Buuren, 2014).
 The \code{"gcdg"} references were calculated from the 15 cohorts of the
 GCDG-study, and cover age range 0-5 years (Weber, 2019).
+The \code{"phase1"} references were calculated from the GSED Phase 1 validation
+data (GSED-BGD, GSED-PAK, GSED-TZA) cover age range 2w-3.5 years. The
+age range 3.5-5 yrs is linearly extrapolated and are only indicative.
 }
 \examples{
 head(builtin_references)
@@ -53,7 +58,7 @@ method and penalized likelihood. Statistics in Medicine, 11(10),
 
 Van Buuren S (2014). Growth charts of human development.
 Stat Methods Med Res, 23(4), 346-368.
-\href{https://stefvanbuuren.name/publications/2014\%20Growth\%20charts\%20for\%20development\%20-\%20SMMR.pdf}{pdf}
+\url{https://stefvanbuuren.name/publication/van-buuren-2014-gc/}
 
 Weber AM, Rubio-Codina M, Walker SP, van Buuren S, Eekhout I,
 Grantham-McGregor S, Caridad Araujo M, Chang SM, Fernald LCH,
@@ -61,7 +66,12 @@ Hamadani JD, Hanlon A, Karam SM, Lozoff B, Ratsifandrihamanana L,
 Richter L, Black MM (2019). The D-score: a metric for interpreting
 the early development of infants and toddlers across global settings.
 BMJ Global Health, BMJ Global Health 4: e001724.
-\href{https://gh.bmj.com/content/bmjgh/4/6/e001724.full.pdf}{pdf}.
+\url{https://gh.bmj.com/content/bmjgh/4/6/e001724.full.pdf}
+
+Stasinopoulos M, Rigby R (2022). gamlss.dist: Distributions for
+Generalized Additive Models for Location Scale and Shape,
+R package version 6.0-3,
+\url{https://CRAN.R-project.org/package=gamlss.dist}
 }
 \seealso{
 \code{\link[=dscore]{dscore()}}

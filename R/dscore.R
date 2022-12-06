@@ -20,11 +20,16 @@
 #' @param xunit A string specifying the unit in which age is measured
 #' (either `"decimal"`, `"days"` or `"months"`).
 #' The default (`"decimal"`) means decimal age in years.
-#' @param key A string that sets the key, the set of difficulty
+#' @param key A string that selects a subset in the itembank that
+#' makes up the key, the set of difficulty
 #' estimates from a fitted Rasch model.
-#' The built-in keys are: `"gsed"` (default), `"gcdg"`,
-#' and `"dutch"`. Use `key = ""` to use all item names,
-#' which should only be done if there are no duplicate itemnames.
+#' The built-in keys are:  `"gsed2212"` (default), `"gsed2208"` (deprecated),
+#' `"gsed2206"` (deprecated), `"gsed1912"`, `"lf2206"`, `"sf2206"`, `"gcdg"`,
+#' and `"dutch"`. Since version 1.5.0, the `key = "gsed"`
+#' selects the latest key starting with the string "gsed".
+#' Use `key = ""` to use all item names,
+#' which should only be done if there are no duplicate itemnames
+#' in the itembank.
 #' @param itembank A `data.frame` with columns
 #' `key`, `item`, `tau`, `instrument`, `domain`,
 #' `mode`, `number` and `label`. Only columns `item`
@@ -33,18 +38,24 @@
 #' default.
 #' @param metric A string, either `"dscore"` (default) or
 #' `"logit"`, signalling the metric in which ability is estimated.
-#' @param prior_mean A string specifying a column name in `data`
-#' with the mean of the prior for the D-score calculation.
+#' @param prior_mean A string specifying where the mean of the
+#' prior for the D-score calculation should come from. It could be
+#' a column name in `data` (when you want your own prior for every row),
+#' but normally this is one of the keywords `".dutch"`, `".gcdg"` or `".phase1"`.
 #' The default depends on the `key`. If `key == "dutch"` then
-#' `prior_mean = "dutch"`, else it is `".gcdg"`. These settings
-#' calculate an age-dependent prior mean internally according to function
-#' `dscore:::count_mu_gcdg()`.
-#' The choice `prior_mean = ".dutch"`
+#' `prior_mean = ".dutch"`. The choice `prior_mean = ".dutch"`
 #' calculates `prior_mean` from the Count model coded in
 #' `dscore:::count_mu_dutch()`).
+#' If `key` is #' `"gcdg"`, `"gsed1912"`,
+#' `"gsed2206"`, `"lf2206"` or `"sf2206"` then `prior_mean = ".gcdg"`.
+#' This setting calculates an age-dependent prior mean internally according
+#' to function `dscore:::count_mu_gcdg()`. In other cases, `prior_mean = ".phase1"`
+#' which uses the function `dscore:::count_mu_phase1()`.
+#' Normally, you should not touch this parameter, but feel free to use
+#' `prior_mean` to override the automatic choices.
 #' @param prior_sd A string specifying a column name in `data`
 #' with the standard deviation of the prior for the D-score calculation.
-#' If not specified, the standard deviation is taken as 5.
+#' If not specified, the standard deviation is taken as 5 for every row.
 #' @param transform Vector of length 2, signalling the intercept
 #' and slope respectively of the linear transform that converts an
 #' observation in the logit scale to the the D-score scale. Only
@@ -53,10 +64,16 @@
 #' This vector should span the range of all D-score values. The default
 #' (`qp = -10:100`) is suitable for age range 0-4 years.
 #' @param population A string describing the population. Currently
-#' supported are `"dutch"` and `"gcdg"` (default).
+#' supported are `"phase1"` (default), `"dutch"`, `"gcdg"`.
 #' @param dec A vector of two integers specifying the number of
 #' decimals for rounding the D-score and DAZ, respectively.
 #' The default is `dec = c(2L, 3L)`.
+#' @param relevance A numeric vector of length with the lower and
+#' upper bounds of the relevance interval. The procedure calculates
+#' a dynamic EAP for each item. If the difficulty level (tau) of the
+#' next item is outside the relevance interval around EAP, the procedure
+#' ignore the score on the item. The default is `c(-Inf, +Inf)` does not
+#' ignore scores.
 #' @return
 #' The `dscore()` function returns a `data.frame` with
 #' `nrow(data)` rows and the following columns:
@@ -83,30 +100,34 @@
 #'
 #' The item names should correspond to the `"gsed"` lexicon.
 #'
-#' The built-in itembank (object [builtin_itembank()]) supports
-#' keys `"gsed"` (default), `"gcdg"` and `"dutch"`.
 #' A key is defined by the set of estimated item difficulties.
 #'
 #' Key | Model | Quadrature | Instruments | Direct/Caregiver | Reference
 #' --- | -----:| ----------:| ----------: |:----------------:|:---------
 #' `"dutch"` | `75_0`   | `-10:80`  | 1   | direct | Van Buuren, 2014/2020
 #' `"gcdg"`  | `565_18` | `-10:100` | 14  | direct | Weber, 2019
-#' `"gsed"`  | `807_17` | `-10:100` | 20  | mixed  | GSED Team, 2019
+#' `"gsed1912"`  | `807_17` | `-10:100` | 20  | mixed  | GSED Team, 2019
+#' `"gsed2206"`  | `818_17` | `-10:100` | 22  | mixed  | GSED Team, 2022
+#' `"gsed2208"`  | `818_6` | `-10:100` | 22  | mixed  | GSED Team, 2022
+#' `"gsed2212"`  | `818_6` | `-10:100` | 22  | mixed  | GSED Team, 2022
+#' `"lf2206"`    | `155_0` | `-10:100`  | 1   | direct | GSED Team, 2022
+#' `"sf2206"`    | `139_0` | `-10:100`  | 1   | caregiver | GSED Team, 2022
 #'
 #' As a general rule, one should only compare D-scores
 #' that are calculated using the same key and the same
 #' set of quadrature points. For calculating D-scores on new data,
-#' the advice is to use the most general key, `"gsed"`.
+#' the advice is to use the default, which currently links to
+#' `"gsed2212"`.
 #'
 #' The default starting prior is a mean calculated from a so-called
 #' "Count model" that describes mean D-score as a function of age. The
 #' Count models are stored as internal functions
-#' `dscore:::count_mu_gcdg()` (default) and
+#' `dscore:::count_mu_phase1()`, `dscore:::count_mu_gcdg()` and
 #' `dscore:::count_mu_dutch()`. The spread of the starting prior
 #' is 5 D-score points around this mean D-score, which corresponds to
-#' approximately twice the normal spread of child of a given age. The
+#' approximately 1.5 to 2 times the normal spread of child of a given age. The
 #' starting prior is thus somewhat informative for low numbers of
-#' valid items, and unformative for large number of items (say >10 items).
+#' valid items, and uninformative for large number of items (say >10 items).
 #'
 #' @references
 #' Bock DD, Mislevy RJ (1982).
@@ -115,11 +136,7 @@
 #'
 #' Van Buuren S (2014). Growth charts of human development.
 #' Stat Methods Med Res, 23(4), 346-368.
-#' [pdf](https://stefvanbuuren.name/publications/2014\%20Growth\%20charts\%20for\%20development\%20-\%20SMMR.pdf)
-#'
-#' Van Buuren S, Dusseldorp E, Doove B (2017).
-#' D-scores and references for ages 2-4 years. The Netherlands.
-#' In preparation, 2017-11-27.
+#' <https://stefvanbuuren.name/publication/van-buuren-2014-gc/>
 #'
 #' Weber AM, Rubio-Codina M, Walker SP, van Buuren S, Eekhout I,
 #' Grantham-McGregor S, Caridad Araujo M, Chang SM, Fernald LCH,
@@ -127,9 +144,9 @@
 #' Richter L, Black MM (2019). The D-score: a metric for interpreting
 #' the early development of infants and toddlers across global settings.
 #' BMJ Global Health, BMJ Global Health 4: e001724.
-#' [pdf](https://gh.bmj.com/content/bmjgh/4/6/e001724.full.pdf).
+#' <https://gh.bmj.com/content/bmjgh/4/6/e001724.full.pdf>
 #'
-#' @author Stef van Buuren, Iris Eekhout, Arjan Huizing (2020)
+#' @author Stef van Buuren, Iris Eekhout, Arjan Huizing (2022)
 #' @seealso [get_tau()],
 #' [builtin_itembank()], [posterior()],
 #' [builtin_references()]
@@ -159,24 +176,27 @@ dscore <- function(data,
                    items = names(data),
                    xname = "age",
                    xunit = c("decimal", "days", "months"),
-                   key = "gsed",
+                   key = NULL,
                    itembank = dscore::builtin_itembank,
                    metric = c("dscore", "logit"),
-                   prior_mean = ifelse(key == "dutch", ".dutch", ".gcdg"),
+                   prior_mean = NULL,
                    prior_sd = NULL,
                    transform = NULL,
                    qp = -10:100,
-                   population = key,
-                   dec = c(2L, 3L)) {
+                   population = NULL,
+                   dec = c(2L, 3L),
+                   relevance = c(-Inf, Inf)) {
   xunit <- match.arg(xunit)
   metric <- match.arg(metric)
+
   calc_dscore(
     data = data, items = items, xname = xname, xunit = xunit,
     key = key, itembank = itembank, metric = metric,
     prior_mean = prior_mean, prior_sd = prior_sd,
     transform = transform, qp = qp,
     population = population, dec = dec,
-    posterior = FALSE
+    posterior = FALSE,
+    relevance = relevance
   )
 }
 
@@ -188,24 +208,28 @@ dscore_posterior <- function(data,
                              items = names(data),
                              xname = "age",
                              xunit = c("decimal", "days", "months"),
-                             key = "gsed",
+                             key = NULL,
                              itembank = dscore::builtin_itembank,
                              metric = c("dscore", "logit"),
-                             prior_mean = ifelse(key == "dutch", ".dutch", ".gcdg"),
+                             prior_mean = NULL,
                              prior_sd = NULL,
                              transform = NULL,
                              qp = -10:100,
-                             population = key,
-                             dec = c(2L, 3L)) {
+                             population = NULL,
+                             dec = c(2L, 3L),
+                             relevance = c(-Inf, Inf)) {
+
   xunit <- match.arg(xunit)
   metric <- match.arg(metric)
+
   calc_dscore(
     data = data, items = items, xname = xname, xunit = xunit,
     key = key, itembank = itembank, metric = metric,
     prior_mean = prior_mean, prior_sd = prior_sd,
     transform = transform, qp = qp,
     population = population, dec = dec,
-    posterior = TRUE
+    posterior = TRUE,
+    relevance = relevance
   )
 }
 
@@ -214,7 +238,57 @@ calc_dscore <- function(data, items, xname, xunit,
                         prior_mean, prior_sd,
                         transform, qp,
                         population, dec,
-                        posterior) {
+                        posterior,
+                        relevance) {
+  stopifnot(length(relevance) == 2L)
+
+  # set default key
+  if (is.null(key) || key == "gsed") {
+    key <- "gsed2212"
+  }
+
+  # set default reference population for DAZ
+  if (is.null(population)) {
+    if (key %in% c("gsed2212", "gsed2208", "293_0"))
+      population <- "phase1"
+    if (key %in% c("gcdg", "gsed1912", "gsed2206", "lf2206", "sf2206", "294_0"))
+      population <- "gcdg"
+    if (key %in% c("dutch"))
+      population <- "dutch"
+    if (is.null(population)) {
+      population <- "phase1"
+      warning("Could not set 'population' argument. Uses phase1.")
+    }
+  }
+
+  # set default column name of prior_mean
+  if (is.null(prior_mean)) {
+    prior_mean <- switch(population,
+                         phase1 = ".phase1",
+                         gcdg = ".gcdg",
+                         dutch = ".dutch",
+                         "other")
+    if (prior_mean == "other") {
+      prior_mean <- ".phase1"
+      warning("Inherits prior mean from population phase1. Set prior_mean = '.phase1' to silence this warning.")
+    }
+  }
+
+  # set default transform if needed
+  if (is.null(transform) && metric == "logit") {
+    transform <- switch(population,
+                        phase1 = c(54.939147, 4.064264),
+                        gcdg = c(66.174355, 2.073871),
+                        dutch = c(38.906, 2.1044))
+    # if (key %in% c("gsed2208", "293_0"))
+    #   transform <- c(54.939147, 4.064264)
+    # if (key %in% c("gcdg", "gsed1912", "gsed2206", "lf2206", "sf2206"))
+    #   transform <- c(66.174355, 2.073871)
+    # if (key %in% c("dutch"))
+    #   transform <- c(38.906, 2.1044) # van buuren 2014
+    if (is.null(transform)) stop("Could not set 'transform' argument.")
+  }
+
   # handle zero rows
   if (nrow(data) == 0L) {
     return(
@@ -263,24 +337,23 @@ calc_dscore <- function(data, items, xname, xunit,
     )
   }
 
-  # determine mu for the prior
+  # initialise prior mean (mu)
   mu <- rep(NA, nrow(data))
   if (prior_mean == ".gcdg") {
     mu <- count_mu_gcdg(a)
   } else if (prior_mean == ".dutch") {
     mu <- count_mu_dutch(a)
-  } else if (prior_mean %in% names(data)) mu <- data[, prior_mean]
+  } else if (prior_mean == ".phase1") {
+    mu <- count_mu_phase1(a)
+  } else if (prior_mean %in% names(data)) {
+    mu <- data[[prior_mean]]
+  }
+  # if (any(is.na(mu))) stop("Missing values in prior mean found.")
 
   # determine sd for the prior
   sd <- rep(5, nrow(data))
   if (is.character(prior_sd) && prior_sd %in% names(data))
-    sd <- data[, prior_sd]
-
-  # determine transform if needed
-  if (is.null(transform) && metric == "logit") {
-    if (prior_mean == ".gcdg") transform <- c(66.174355, 2.073871)
-    if (prior_mean == ".dutch") transform <- c(38.906, 2.1044) # van buuren 2014
-  }
+    sd <- data[[prior_sd]]
 
   # setup for logit scale
   if (metric == "logit") {
@@ -316,7 +389,9 @@ calc_dscore <- function(data, items, xname, xunit,
           tau = .data$tau,
           qp = qp,
           mu = (.data$mu)[1L],
-          sd = (.data$sd)[1L]
+          sd = (.data$sd)[1L],
+          relhi = relevance[2L],
+          rello = relevance[1L]
         )$posterior)
       )
 
@@ -352,7 +427,9 @@ calc_dscore <- function(data, items, xname, xunit,
           tau = .data$tau,
           qp = qp,
           mu = (.data$mu)[1L],
-          sd = (.data$sd)[1L]
+          sd = (.data$sd)[1L],
+          relhi = relevance[2L],
+          rello = relevance[1L]
         )$posterior)
       )
 
