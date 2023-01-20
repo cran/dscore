@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Scoring GSED</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">
+
+div.csl-bib-body { }
+div.csl-entry {
+clear: both;
+}
+.hanging div.csl-entry {
+margin-left:2em;
+text-indent:-2em;
+}
+div.csl-left-margin {
+min-width:2em;
+float:left;
+}
+div.csl-right-inline {
+margin-left:2em;
+padding-left:1em;
+}
+div.csl-indent {
+margin-left: 2em;
+}
+</style>
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #FFFFFF;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+table {
+border-collapse: collapse;
+}
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Scoring GSED</h1>
+
+
+
+<div id="d-score-and-daz" class="section level2">
+<h2>D-score and DAZ</h2>
+<p>Suppose you have administered GSED SF, GSED LF <span class="citation">(<a href="#ref-mccray2023" role="doc-biblioref">McCray
+et al. 2023</a>)</span> or GSED HH to one or more children. The next
+step is calculating each child’s developmental score (<span class="math inline">\(D\)</span>-score) and age-adjusted equivalent
+(DAZ). This step is known as <strong>scoring</strong>. The present
+section provides recipes for calculating the <span class="math inline">\(D\)</span>-score and DAZ. We may pick one of the
+following two methods:</p>
+<ol style="list-style-type: decimal">
+<li>Online calculator. The online Shiny app <a href="https://tnochildhealthstatistics.shinyapps.io/dcalculator/" class="uri">https://tnochildhealthstatistics.shinyapps.io/dcalculator/</a>
+is a convenient option for users not familiar with <code>R</code>. The
+app contains online documentation and instructions and will not be
+further discussed here.</li>
+<li><code>R</code> package <code>dscore</code>. The <code>R</code>
+package <code>dscore</code> at <a href="https://CRAN.R-project.org/package=dscore" class="uri">https://CRAN.R-project.org/package=dscore</a> is a flexible
+option with all the tools needed to calculate the <span class="math inline">\(D\)</span>-score. It is an excellent choice for
+users familiar with <code>R</code> and users who like to incorporate
+<span class="math inline">\(D\)</span>-score calculations into a
+workflow.</li>
+</ol>
+</div>
+<div id="preliminaries" class="section level2">
+<h2>Preliminaries</h2>
+<ul>
+<li>We use the <code>R</code> language. If you are new to <code>R</code>
+consult the <a href="https://support.posit.co/hc/en-us/articles/201141096-Getting-Started-with-R">Getting
+Started with R</a> site;</li>
+<li>You need to install the <code>R</code> package <code>dscore</code>
+on your local machine;</li>
+<li>The child data need to be stored as a <code>data.frame</code>, a
+standard <code>R</code> tabular structure;</li>
+<li>You need to run the <code>dscore()</code> function to calculate the
+<span class="math inline">\(D\)</span>-score and DAZ. The function
+returns a table with six columns with the estimates with the same number
+of rows as your data.</li>
+</ul>
+</div>
+<div id="install-the-dscore-package" class="section level2">
+<h2>Install the <code>dscore</code> package</h2>
+<p>The <code>dscore</code> package contains tools to</p>
+<ul>
+<li>Map your item names to the GSED convention</li>
+<li>Calculate <em>D</em>-scores from item level responses</li>
+<li>Transform the <em>D</em>-scores into DAZ, age-standardised
+Z-scores</li>
+</ul>
+<p>The required input consists of <em>item level</em> responses on
+milestones collected using instruments for measuring child development,
+including the GSED LF, GSED SF and GSED HH.</p>
+<p>There are two versions of the <code>dscore</code> package. For daily
+use, we recommend the curated and published version on <a href="https://CRAN.R-project.org/package=dscore">CRAN</a>. In
+<code>R</code>, install the <code>dscore</code> package as</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;dscore&quot;</span>)</span></code></pre></div>
+<p>In some cases, you might need a more recent version that includes
+extensions and bug fixes not yet available on CRAN. You can install the
+development version from <a href="https://github.com/">GitHub</a>
+by:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;remotes&quot;</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;d-score/dscore&quot;</span>)</span></code></pre></div>
+<p>The development version requires a local C++ compiler for building
+the package from source.</p>
+</div>
+<div id="gsed-9-position-item-names" class="section level2">
+<h2>GSED 9-position item names</h2>
+<p>The <code>dscore()</code> function accepts item names that follow the
+GSED 9-position schema. A name with a length of nine characters
+identifies every milestone. The following table shows the construction
+of names.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="right">Position</th>
+<th align="left">Description</th>
+<th align="left">Example</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">1-3</td>
+<td align="left">instrument</td>
+<td align="left"><code>by3</code></td>
+</tr>
+<tr class="even">
+<td align="right">4-5</td>
+<td align="left">developmental domain</td>
+<td align="left"><code>cg</code></td>
+</tr>
+<tr class="odd">
+<td align="right">6</td>
+<td align="left">administration mode</td>
+<td align="left"><code>d</code></td>
+</tr>
+<tr class="even">
+<td align="right">7-9</td>
+<td align="left">item number</td>
+<td align="left"><code>018</code></td>
+</tr>
+</tbody>
+</table>
+<p>Thus, item <code>by3cgd018</code> refers to the 18th item in the
+cognitive scale of the Bayley-III. The label of the item can be obtained
+by</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dscore)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">get_labels</span>(<span class="st">&quot;by3cgd018&quot;</span>)</span></code></pre></div>
+<pre><code>##           by3cgd018 
+## &quot;Inspects own hand&quot;</code></pre>
+<p>The <code>dscore</code> package maintains a list of items names.</p>
+</div>
+<div id="response-data-format" class="section level2">
+<h2>Response data format</h2>
+<p>Rows: One measurement, i.e., one test administration for a child at a
+given age, occupies a row in the data set. Thus, if a child is measured
+three times at different ages, there will be three rows for that child
+in the dataset.</p>
+<p>Columns: There should be at least two columns in the data set:</p>
+<ul>
+<li>One column with the age of the child. The age column may have any
+name, and may be measured in decimal age, months, or days since birth.
+Do not truncate age. Make the value as a continuous as possible, for
+example by calculating age in days by the difference between measurement
+date and birth date.</li>
+<li>One column for each item, appropriately named by the 9-position GSED
+item name. Normally, the items come from the same instrument, but they
+may also come from multiple instruments. The data from any recognised
+item name will contribute to the <span class="math inline">\(D\)</span>-score. Do not duplicate names in the
+data. A PASS is coded as <code>1</code>, a FAIL as <code>0</code>. If
+there is no answer or if the item was not administered use the missing
+value code <code>NA</code>. Items that are never administered may be
+coded as all <code>NA</code> or deleted.</li>
+</ul>
+<p>The dataset may contain additional columns, e.g., the child number or
+health information. These are ignored by the <span class="math inline">\(D\)</span>-score calculation.</p>
+<p>The most important steps is preparing the data for the D-score
+calculations are:</p>
+<ul>
+<li>rename your original variable names into the 9-position GSED item
+names;</li>
+<li>recode all item response as <code>0</code>, <code>1</code> or
+<code>NA</code></li>
+</ul>
+</div>
+<div id="gsed-instruments" class="section level2 tabset tabset-pills">
+<h2 class="tabset tabset-pills">GSED Instruments</h2>
+<p>The table below lists the five available GSED instruments:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Instrument name</th>
+<th align="left">Instrument code</th>
+<th align="right">Length</th>
+<th align="left">Status</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"><code>GSED SF V1</code></td>
+<td align="left"><code>gs1</code></td>
+<td align="right">139</td>
+<td align="left">Active</td>
+</tr>
+<tr class="even">
+<td align="left"><code>GSED LF V1</code></td>
+<td align="left"><code>gl1</code></td>
+<td align="right">155</td>
+<td align="left">Active</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>GSED HH V1</code></td>
+<td align="left"><code>gh1</code></td>
+<td align="right">55</td>
+<td align="left">Active</td>
+</tr>
+<tr class="even">
+<td align="left"><code>GSED SF V0</code></td>
+<td align="left"><code>gpa</code></td>
+<td align="right">139</td>
+<td align="left">Retired</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>GSED LF V0</code></td>
+<td align="left"><code>gto</code></td>
+<td align="right">155</td>
+<td align="left">Retired</td>
+</tr>
+</tbody>
+</table>
+<p>Select the section corresponding to your instrument for further
+instructions.</p>
+<div id="gsed-sf-v1" class="section level3">
+<h3><code>GSED SF V1</code></h3>
+<p>The <code>GSED SF V1</code> instrument contains 139 items and has
+instrument code <code>gs1</code>.</p>
+<div id="check" class="section level4">
+<h4>Check</h4>
+<p>Obtain the full list of item name for as</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>instrument <span class="ot">&lt;-</span> <span class="st">&quot;gs1&quot;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>items <span class="ot">&lt;-</span> <span class="fu">get_itemnames</span>(<span class="at">instrument =</span> instrument, <span class="at">order =</span> <span class="st">&quot;indm&quot;</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(items)</span></code></pre></div>
+<pre><code>## [1] 139</code></pre>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(items)</span></code></pre></div>
+<pre><code>## [1] &quot;gs1sec001&quot; &quot;gs1moc002&quot; &quot;gs1sec003&quot; &quot;gs1lgc004&quot; &quot;gs1moc005&quot; &quot;gs1cgc006&quot;</code></pre>
+<p>The <code>order</code> argument is needed to sort items according to
+sequence number 1 to 139. Check that you have the correct version by
+comparing the labels of the first few items as:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>labels <span class="ot">&lt;-</span> <span class="fu">get_labels</span>(items)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">cbind</span>(items, <span class="fu">substr</span>(labels, <span class="dv">1</span>, <span class="dv">50</span>)))</span></code></pre></div>
+<pre><code>##           items                                                           
+## gs1sec001 &quot;gs1sec001&quot; &quot;Does your child smile?&quot;                            
+## gs1moc002 &quot;gs1moc002&quot; &quot;When lying on his/her back, does your child move h&quot;
+## gs1sec003 &quot;gs1sec003&quot; &quot;Does your child look at your face when you speak t&quot;
+## gs1lgc004 &quot;gs1lgc004&quot; &quot;Does your child cry when he/she is hungry, wet, ti&quot;
+## gs1moc005 &quot;gs1moc005&quot; &quot;Does your child grasp your finger if you touch her&quot;
+## gs1cgc006 &quot;gs1cgc006&quot; &quot;Does your child look at and focus on objects in fr&quot;</code></pre>
+</div>
+<div id="renaming-example" class="section level4">
+<h4>Renaming example</h4>
+<p>Suppose that you stored your data with items names <code>sf001</code>
+to <code>sf139</code>. For example,</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>sf <span class="ot">&lt;-</span> dscore<span class="sc">::</span>sample_sf</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(sf[, <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="dv">101</span><span class="sc">:</span><span class="dv">105</span>)])</span></code></pre></div>
+<pre><code>##   subjid agedays sf099 sf100 sf101 sf102 sf103
+## 1      1     811     1     1     1     1     1
+## 2      2     898     1     1     1     1     1
+## 3      3     203    NA    NA    NA    NA    NA
+## 4      4     966    NA    NA    NA     1    NA
+## 5      8     770     1     1     1     0     1
+## 6      9     306    NA    NA    NA    NA    NA</code></pre>
+<p>Make sure that the items are in the correct order. Rename the columns
+with gsed 9-position item names.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(sf)[<span class="dv">3</span><span class="sc">:</span><span class="dv">141</span>] <span class="ot">&lt;-</span> items</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(sf[, <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="dv">101</span><span class="sc">:</span><span class="dv">105</span>)])</span></code></pre></div>
+<pre><code>##   subjid agedays gs1lgc099 gs1lgc100 gs1moc101 gs1sec102 gs1lic103
+## 1      1     811         1         1         1         1         1
+## 2      2     898         1         1         1         1         1
+## 3      3     203        NA        NA        NA        NA        NA
+## 4      4     966        NA        NA        NA         1        NA
+## 5      8     770         1         1         1         0         1
+## 6      9     306        NA        NA        NA        NA        NA</code></pre>
+<p>The data in <code>sf</code> are now ready for the
+<code>dscore()</code> function.</p>
+</div>
+<div id="calculate-d-score" class="section level4">
+<h4>Calculate <span class="math inline">\(D\)</span>-score</h4>
+<p>Once the data are in proper shape, calculation of the <span class="math inline">\(D\)</span>-score is straightforward. The
+<code>sf</code> dataset has properly named columns that identify each
+item.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">dscore</span>(sf, <span class="at">xname =</span> <span class="st">&quot;agedays&quot;</span>, <span class="at">xunit =</span> <span class="st">&quot;days&quot;</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(results)</span></code></pre></div>
+<pre><code>##        a  n      p     d       sem    daz
+## 1 2.2204 29 0.7586 64.78 0.6444784 -0.540
+## 2 2.4586 39 0.6923 67.13 0.6492821 -0.515
+## 3 0.5558 49 0.6531 38.36 0.9415629  1.055
+## 4 2.6448 36 0.7500 73.22 0.6560832  0.828
+## 5 2.1081 50 0.5000 65.49 0.6150650 -0.011
+## 6 0.8378 49 0.6939 41.58 0.9687909 -0.595</code></pre>
+<p>The table below provides the interpretation of the output:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>a</code></td>
+<td>Decimal age in years</td>
+</tr>
+<tr class="even">
+<td><code>n</code></td>
+<td>Number of items used to calculate the <span class="math inline">\(D\)</span>-score</td>
+</tr>
+<tr class="odd">
+<td><code>p</code></td>
+<td>Proportion of passed milestones</td>
+</tr>
+<tr class="even">
+<td><code>d</code></td>
+<td><span class="math inline">\(D\)</span>-score (posterior mean)</td>
+</tr>
+<tr class="odd">
+<td><code>sem</code></td>
+<td>Standard error of measurement (posterior standard deviation)</td>
+</tr>
+<tr class="even">
+<td><code>daz</code></td>
+<td><span class="math inline">\(D\)</span>-score corrected for age</td>
+</tr>
+</tbody>
+</table>
+<p>The number of rows of <code>result</code> is equal to the number of
+rows of <code>sf</code>. We save the result for later processing.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>sf2 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(sf, results)</span></code></pre></div>
+<p>It is possible to calculate <span class="math inline">\(D\)</span>-score for item subsets by setting the
+<code>items</code> argument. We do not advertise this option for
+practical application, but suppose we are interested in the <span class="math inline">\(D\)</span>-score based on items from
+<code>gs1</code> and <code>gl1</code> for domains <code>mo</code> or
+<code>gm</code> (motor) only. The “motor” <span class="math inline">\(D\)</span>-score can be calculated as follows:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>items_motor <span class="ot">&lt;-</span> <span class="fu">get_itemnames</span>(<span class="at">instrument =</span> <span class="fu">c</span>(<span class="st">&quot;gs1&quot;</span>, <span class="st">&quot;gl1&quot;</span>), <span class="at">domain =</span> <span class="fu">c</span>(<span class="st">&quot;mo&quot;</span>, <span class="st">&quot;gm&quot;</span>))</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">dscore</span>(sf, <span class="at">items =</span> items_motor, <span class="at">xname =</span> <span class="st">&quot;agedays&quot;</span>, <span class="at">xunit =</span> <span class="st">&quot;days&quot;</span>)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(results)</span></code></pre></div>
+<pre><code>##        a  n      p     d      sem    daz
+## 1 2.2204  6 0.8333 63.40 1.713268 -0.908
+## 2 2.4586  8 0.7500 66.68 1.851939 -0.638
+## 3 0.5558 30 0.7333 39.45 1.077956  1.365
+## 4 2.6448  5 0.8000 75.07 1.487556  1.384
+## 5 2.1081 10 0.7000 69.57 1.787357  1.178
+## 6 0.8378 31 0.7419 41.17 1.133857 -0.702</code></pre>
+</div>
+</div>
+<div id="gsed-lf-v1" class="section level3">
+<h3><code>GSED LF V1</code></h3>
+<p>The <code>GSED LF V1</code> instrument contains 155 items and has
+instrument code <code>gl1</code>.</p>
+<div id="check-1" class="section level4">
+<h4>Check</h4>
+<p>Obtain the full list of item name for as</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>instrument <span class="ot">&lt;-</span> <span class="st">&quot;gl1&quot;</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>items <span class="ot">&lt;-</span> <span class="fu">get_itemnames</span>(<span class="at">instrument =</span> instrument)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(items)</span></code></pre></div>
+<pre><code>## [1] 155</code></pre>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(items)</span></code></pre></div>
+<pre><code>## [1] &quot;gl1fmd001&quot; &quot;gl1fmd002&quot; &quot;gl1fmd003&quot; &quot;gl1fmd004&quot; &quot;gl1fmd005&quot; &quot;gl1fmd006&quot;</code></pre>
+<p>Reorder item names so that they corresponds to streams A, B and C,
+respectively.</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>items <span class="ot">&lt;-</span> items[<span class="fu">c</span>(<span class="dv">55</span><span class="sc">:</span><span class="dv">155</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">54</span>)]</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(items)</span></code></pre></div>
+<pre><code>## [1] &quot;gl1gmd001&quot; &quot;gl1gmd002&quot; &quot;gl1gmd003&quot; &quot;gl1gmd004&quot; &quot;gl1gmd005&quot; &quot;gl1gmd006&quot;</code></pre>
+<p>Check that you have the correct version by comparing the labels of
+the first few items as:</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>labels <span class="ot">&lt;-</span> <span class="fu">get_labels</span>(items)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">cbind</span>(items, <span class="fu">substr</span>(labels, <span class="dv">1</span>, <span class="dv">50</span>)))</span></code></pre></div>
+<pre><code>##           items                                                           
+## gl1gmd001 &quot;gl1gmd001&quot; &quot;Moves body in reaction to caregiver&quot;               
+## gl1gmd002 &quot;gl1gmd002&quot; &quot;Moves body, kicking legs and moving arms equally o&quot;
+## gl1gmd003 &quot;gl1gmd003&quot; &quot;Pulls to sit - no head lag&quot;                        
+## gl1gmd004 &quot;gl1gmd004&quot; &quot;Lifts head in prone 45 degrees&quot;                    
+## gl1gmd005 &quot;gl1gmd005&quot; &quot;Lifts head, shoulders, chest when prone (2X)&quot;      
+## gl1gmd006 &quot;gl1gmd006&quot; &quot;Puts hands together in front of face&quot;</code></pre>
+</div>
+<div id="renaming-example-1" class="section level4">
+<h4>Renaming example</h4>
+<p>Suppose that you stored your data with items names <code>lf001</code>
+to <code>lf155</code>. For example,</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>lf <span class="ot">&lt;-</span> dscore<span class="sc">::</span>sample_lf</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(lf[, <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="dv">60</span><span class="sc">:</span><span class="dv">64</span>)])</span></code></pre></div>
+<pre><code>##   subjid agedays lf058 lf059 lf060 lf061 lf062
+## 1      1     811    NA    NA    NA    NA    NA
+## 2      2     898    NA    NA    NA    NA    NA
+## 3      3     203     0     0     0    NA    NA
+## 4      4     966    NA    NA    NA    NA    NA
+## 5      8     770     0     0     0     0     0
+## 6      9     306     1     1     0     1     0</code></pre>
+<p>Make sure that the items are in the correct order. Rename the columns
+with gsed 9-position item names.</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(lf)[<span class="dv">3</span><span class="sc">:</span><span class="dv">157</span>] <span class="ot">&lt;-</span> items</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(lf[, <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="dv">60</span><span class="sc">:</span><span class="dv">64</span>)])</span></code></pre></div>
+<pre><code>##   subjid agedays gl1lgd009 gl1lgd010 gl1lgd011 gl1lgd012 gl1lgd013
+## 1      1     811        NA        NA        NA        NA        NA
+## 2      2     898        NA        NA        NA        NA        NA
+## 3      3     203         0         0         0        NA        NA
+## 4      4     966        NA        NA        NA        NA        NA
+## 5      8     770         0         0         0         0         0
+## 6      9     306         1         1         0         1         0</code></pre>
+<p>The data in <code>lf</code> are now ready for the
+<code>dscore()</code> function.</p>
+</div>
+<div id="calculate-d-score-1" class="section level4">
+<h4>Calculate <span class="math inline">\(D\)</span>-score</h4>
+<p>Once the data are in proper shape, calculation of the <span class="math inline">\(D\)</span>-score is straightforward. The
+<code>lf</code> dataset has properly named columns that identify each
+item.</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">dscore</span>(lf, <span class="at">xname =</span> <span class="st">&quot;agedays&quot;</span>, <span class="at">xunit =</span> <span class="st">&quot;days&quot;</span>)</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(results)</span></code></pre></div>
+<pre><code>##        a  n      p     d       sem    daz
+## 1 2.2204 45 0.5556 67.11 0.5870206  0.117
+## 2 2.4586 53 0.6226 70.65 0.5484131  0.504
+## 3 0.5558 34 0.5588 34.13 0.8412858 -0.150
+## 4 2.6448 54 0.5185 70.80 0.5239288  0.103
+## 5 2.1081 58 0.1724 37.53 1.1685368 -4.444
+## 6 0.8378 32 0.5625 44.40 0.7570235  0.174</code></pre>
+<p>The table below provides the interpretation of the output:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>a</code></td>
+<td>Decimal age in years</td>
+</tr>
+<tr class="even">
+<td><code>n</code></td>
+<td>Number of items used to calculate the <span class="math inline">\(D\)</span>-score</td>
+</tr>
+<tr class="odd">
+<td><code>p</code></td>
+<td>Proportion of passed milestones</td>
+</tr>
+<tr class="even">
+<td><code>d</code></td>
+<td><span class="math inline">\(D\)</span>-score (posterior mean)</td>
+</tr>
+<tr class="odd">
+<td><code>sem</code></td>
+<td>Standard error of measurement (posterior standard deviation)</td>
+</tr>
+<tr class="even">
+<td><code>daz</code></td>
+<td><span class="math inline">\(D\)</span>-score corrected for age</td>
+</tr>
+</tbody>
+</table>
+<p>The number of rows of <code>result</code> is equal to the number of
+rows of <code>lf</code>. We save the result for later processing.</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>lf2 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(lf, results)</span></code></pre></div>
+<p>It is possible to calculate <span class="math inline">\(D\)</span>-score for item subsets by setting the
+<code>items</code> argument. We do not advertise this option for
+practical application, but suppose we are interested in the <span class="math inline">\(D\)</span>-score based on items from
+<code>gs1</code> and <code>gl1</code> for domains <code>mo</code> or
+<code>gm</code> (motor) only. The “motor” <span class="math inline">\(D\)</span>-score can be calculated as follows:</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>items_motor <span class="ot">&lt;-</span> <span class="fu">get_itemnames</span>(<span class="at">instrument =</span> <span class="fu">c</span>(<span class="st">&quot;gs1&quot;</span>, <span class="st">&quot;gl1&quot;</span>), <span class="at">domain =</span> <span class="fu">c</span>(<span class="st">&quot;mo&quot;</span>, <span class="st">&quot;gm&quot;</span>))</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">dscore</span>(lf, <span class="at">items =</span> items_motor, <span class="at">xname =</span> <span class="st">&quot;agedays&quot;</span>, <span class="at">xunit =</span> <span class="st">&quot;days&quot;</span>)</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(results)</span></code></pre></div>
+<pre><code>##        a  n      p     d       sem    daz
+## 1 2.2204 12 0.5833 65.22 2.3250596 -0.419
+## 2 2.4586 18 0.6111 71.28 0.9180576  0.692
+## 3 0.5558 19 0.6842 35.82 1.0002527  0.325
+## 4 2.6448 12 0.4167 65.91 2.1927512 -1.248
+## 5 2.1081 12 0.5000 56.44 1.6829924 -2.217
+## 6 0.8378 14 0.7143 43.10 1.4168986 -0.187</code></pre>
+</div>
+</div>
+<div id="gsed-hh-v1" class="section level3">
+<h3><code>GSED HH V1</code></h3>
+<p>The <code>GSED HH V1</code> instrument contains 55 items and has
+instrument code <code>gh1</code>.</p>
+<div id="check-2" class="section level4">
+<h4>Check</h4>
+<p>Obtain the full list of item name for as</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>instrument <span class="ot">&lt;-</span> <span class="st">&quot;gh1&quot;</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>items <span class="ot">&lt;-</span> <span class="fu">get_itemnames</span>(<span class="at">instrument =</span> instrument, <span class="at">order =</span> <span class="st">&quot;indm&quot;</span>)</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(items)</span></code></pre></div>
+<pre><code>## [1] 55</code></pre>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(items)</span></code></pre></div>
+<pre><code>## [1] &quot;gh1sec001&quot; &quot;gh1sec002&quot; &quot;gh1lgc003&quot; &quot;gh1cgc004&quot; &quot;gh1moc005&quot; &quot;gh1sec006&quot;</code></pre>
+<p>The <code>order</code> argument is needed to sort items according to
+sequence number 1 to 55. Check that you have the correct version by
+comparing the labels of the first few items as:</p>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>labels <span class="ot">&lt;-</span> <span class="fu">get_labels</span>(items)</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">cbind</span>(items, <span class="fu">substr</span>(labels, <span class="dv">1</span>, <span class="dv">50</span>)))</span></code></pre></div>
+<pre><code>##           items                                                           
+## gh1sec001 &quot;gh1sec001&quot; &quot;Does your child smile?&quot;                            
+## gh1sec002 &quot;gh1sec002&quot; &quot;Does your child look at your face when you speak t&quot;
+## gh1lgc003 &quot;gh1lgc003&quot; &quot;Does your child cry when he/she is hungry, wet, ti&quot;
+## gh1cgc004 &quot;gh1cgc004&quot; &quot;Does your child look at and focus on objects in fr&quot;
+## gh1moc005 &quot;gh1moc005&quot; &quot;Does your child bring his/her hand to his/her mout&quot;
+## gh1sec006 &quot;gh1sec006&quot; &quot;Does your child smile when you smile or talk with &quot;</code></pre>
+</div>
+<div id="renaming-example-2" class="section level4">
+<h4>Renaming example</h4>
+<p>Suppose that you stored your data with items names <code>hf001</code>
+to <code>hf139</code>. For example,</p>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>hf <span class="ot">&lt;-</span> dscore<span class="sc">::</span>sample_hf</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(hf[, <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="dv">30</span><span class="sc">:</span><span class="dv">35</span>)])</span></code></pre></div>
+<pre><code>##   subjid agedays hf028 hf029 hf030 hf031 hf032 hf033
+## 1      1     811    NA    NA    NA    NA    NA    NA
+## 2      2     898    NA    NA    NA    NA    NA    NA
+## 3      3     203     1     1     0     1     0     0
+## 4      4     966    NA    NA    NA    NA    NA    NA
+## 5      8     770    NA    NA    NA    NA    NA    NA
+## 6      9     306     1     1     1     1     1     1</code></pre>
+<p>Make sure that the items are in the correct order. Rename the columns
+with gsed 9-position item names.</p>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(hf)[<span class="dv">3</span><span class="sc">:</span><span class="dv">57</span>] <span class="ot">&lt;-</span> items</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(hf[, <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="dv">30</span><span class="sc">:</span><span class="dv">35</span>)])</span></code></pre></div>
+<pre><code>##   subjid agedays gh1cgc028 gh1moc029 gh1lic030 gh1moc031 gh1moc032 gh1moc033
+## 1      1     811        NA        NA        NA        NA        NA        NA
+## 2      2     898        NA        NA        NA        NA        NA        NA
+## 3      3     203         1         1         0         1         0         0
+## 4      4     966        NA        NA        NA        NA        NA        NA
+## 5      8     770        NA        NA        NA        NA        NA        NA
+## 6      9     306         1         1         1         1         1         1</code></pre>
+<p>The data in <code>hf</code> are now ready for the
+<code>dscore()</code> function.</p>
+</div>
+<div id="calculate-d-score-2" class="section level4">
+<h4>Calculate <span class="math inline">\(D\)</span>-score</h4>
+<p>Once the data are in proper shape, calculation of the <span class="math inline">\(D\)</span>-score is straightforward. The
+<code>hf</code> dataset has properly named columns that identify each
+item.</p>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">dscore</span>(hf, <span class="at">xname =</span> <span class="st">&quot;agedays&quot;</span>, <span class="at">xunit =</span> <span class="st">&quot;days&quot;</span>)</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(results)</span></code></pre></div>
+<pre><code>##        a  n      p     d      sem    daz
+## 1 2.2204  8 0.7500 63.70 1.319931 -0.830
+## 2 2.4586  8 1.0000 71.32 3.643986  0.704
+## 3 0.5558 29 0.6207 37.32 1.208338  0.756
+## 4 2.6448  3 1.0000 72.14 3.887905  0.503
+## 5 2.1081  7 1.0000 68.94 3.345038  0.994
+## 6 0.8378 30 0.7000 42.08 1.205053 -0.463</code></pre>
+<p>The table below provides the interpretation of the output:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>a</code></td>
+<td>Decimal age in years</td>
+</tr>
+<tr class="even">
+<td><code>n</code></td>
+<td>Number of items used to calculate the <span class="math inline">\(D\)</span>-score</td>
+</tr>
+<tr class="odd">
+<td><code>p</code></td>
+<td>Proportion of passed milestones</td>
+</tr>
+<tr class="even">
+<td><code>d</code></td>
+<td><span class="math inline">\(D\)</span>-score (posterior mean)</td>
+</tr>
+<tr class="odd">
+<td><code>sem</code></td>
+<td>Standard error of measurement (posterior standard deviation)</td>
+</tr>
+<tr class="even">
+<td><code>daz</code></td>
+<td><span class="math inline">\(D\)</span>-score corrected for age</td>
+</tr>
+</tbody>
+</table>
+<p>The number of rows of <code>results</code> is equal to the number of
+rows of <code>hf</code>. We save the result for later processing.</p>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>hf2 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(hf, results)</span></code></pre></div>
+<p>It is possible to calculate <span class="math inline">\(D\)</span>-score for item subsets by setting the
+<code>items</code> argument. We do not advertise this option for
+practical application, but suppose we are interested in the <span class="math inline">\(D\)</span>-score based on items from
+<code>gs1</code>, <code>gl1</code> and <code>gh1</code> for domains
+<code>mo</code> or <code>gm</code> (motor) only. The “motor” <span class="math inline">\(D\)</span>-score can be calculated as follows:</p>
+<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>items_motor <span class="ot">&lt;-</span> <span class="fu">get_itemnames</span>(<span class="at">instrument =</span> <span class="fu">c</span>(<span class="st">&quot;gs1&quot;</span>, <span class="st">&quot;gl1&quot;</span>, <span class="st">&quot;gh1&quot;</span>), <span class="at">domain =</span> <span class="fu">c</span>(<span class="st">&quot;mo&quot;</span>, <span class="st">&quot;gm&quot;</span>))</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">dscore</span>(hf, <span class="at">items =</span> items_motor, <span class="at">xname =</span> <span class="st">&quot;agedays&quot;</span>, <span class="at">xunit =</span> <span class="st">&quot;days&quot;</span>)</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(results)</span></code></pre></div>
+<pre><code>##        a  n      p     d      sem    daz
+## 1 2.2204  1 1.0000 69.17 3.681033  0.721
+## 2 2.4586  1 1.0000 70.45 4.016257  0.445
+## 3 0.5558 18 0.5000 36.96 1.459643  0.652
+## 4 2.6448  1 1.0000 71.44 4.233367  0.293
+## 5 2.1081  1 1.0000 68.57 3.506822  0.885
+## 6 0.8378 18 0.6111 41.60 1.491812 -0.590</code></pre>
+</div>
+</div>
+<div id="gsed-sf-v0" class="section level3">
+<h3><code>GSED SF V0</code></h3>
+<p>The <code>GSED SF V0</code> instrument contains 139 items and has
+instrument code <code>gpa</code>.</p>
+<div id="check-3" class="section level4">
+<h4>Check</h4>
+<p>Obtain the full list of item name for as</p>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>instrument <span class="ot">&lt;-</span> <span class="st">&quot;gpa&quot;</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>items <span class="ot">&lt;-</span> <span class="fu">get_itemnames</span>(<span class="at">instrument =</span> instrument, <span class="at">order =</span> <span class="st">&quot;indm&quot;</span>)</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(items)</span></code></pre></div>
+<pre><code>## [1] 139</code></pre>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(items)</span></code></pre></div>
+<pre><code>## [1] &quot;gpalac001&quot; &quot;gpacgc002&quot; &quot;gpafmc003&quot; &quot;gpasec004&quot; &quot;gpamoc005&quot; &quot;gpamoc006&quot;</code></pre>
+<p>The <code>order</code> argument is needed to sort items according to
+sequence number 1 to 139. Check that you have the correct version by
+comparing the labels of the first few items as:</p>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>labels <span class="ot">&lt;-</span> <span class="fu">get_labels</span>(items)</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">cbind</span>(items, <span class="fu">substr</span>(labels, <span class="dv">1</span>, <span class="dv">50</span>)))</span></code></pre></div>
+<pre><code>##           items                                                           
+## gpalac001 &quot;gpalac001&quot; &quot;Does your child cry when he/she is hungry, wet, ti&quot;
+## gpacgc002 &quot;gpacgc002&quot; &quot;Does your child look at and focus on objects in fr&quot;
+## gpafmc003 &quot;gpafmc003&quot; &quot;Does your child grasp your finger if you touch her&quot;
+## gpasec004 &quot;gpasec004&quot; &quot;Does your child smile?&quot;                            
+## gpamoc005 &quot;gpamoc005&quot; &quot;Does your child try to move his/her head (or eyes)&quot;
+## gpamoc006 &quot;gpamoc006&quot; &quot;When lying on his/her back, does your child move h&quot;</code></pre>
+</div>
+<div id="renaming-example-3" class="section level4">
+<h4>Renaming example</h4>
+<p>Suppose that you stored your data with items names <code>sf001</code>
+to <code>sf139</code>. For example,</p>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>sf <span class="ot">&lt;-</span> dscore<span class="sc">::</span>sample_sf</span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(sf[, <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="dv">101</span><span class="sc">:</span><span class="dv">105</span>)])</span></code></pre></div>
+<pre><code>##   subjid agedays sf099 sf100 sf101 sf102 sf103
+## 1      1     811     1     1     1     1     1
+## 2      2     898     1     1     1     1     1
+## 3      3     203    NA    NA    NA    NA    NA
+## 4      4     966    NA    NA    NA     1    NA
+## 5      8     770     1     1     1     0     1
+## 6      9     306    NA    NA    NA    NA    NA</code></pre>
+<p>Make sure that the items are in the correct order. Rename the columns
+with gsed 9-position item names.</p>
+<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(sf)[<span class="dv">3</span><span class="sc">:</span><span class="dv">141</span>] <span class="ot">&lt;-</span> items</span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(sf[, <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="dv">101</span><span class="sc">:</span><span class="dv">105</span>)])</span></code></pre></div>
+<pre><code>##   subjid agedays gpalgc099 gpaclc100 gpaclc101 gpalgc102 gpamoc103
+## 1      1     811         1         1         1         1         1
+## 2      2     898         1         1         1         1         1
+## 3      3     203        NA        NA        NA        NA        NA
+## 4      4     966        NA        NA        NA         1        NA
+## 5      8     770         1         1         1         0         1
+## 6      9     306        NA        NA        NA        NA        NA</code></pre>
+<p>The data in <code>sf</code> are now ready for the
+<code>dscore()</code> function.</p>
+</div>
+<div id="calculate-d-score-3" class="section level4">
+<h4>Calculate <span class="math inline">\(D\)</span>-score</h4>
+<p>Once the data are in proper shape, calculation of the <span class="math inline">\(D\)</span>-score is straightforward. The
+<code>sf</code> dataset has properly named columns that identify each
+item.</p>
+<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">dscore</span>(sf, <span class="at">xname =</span> <span class="st">&quot;agedays&quot;</span>, <span class="at">xunit =</span> <span class="st">&quot;days&quot;</span>)</span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(results)</span></code></pre></div>
+<pre><code>##        a  n      p     d       sem    daz
+## 1 2.2204 29 0.7586 65.23 0.7338041 -0.416
+## 2 2.4586 39 0.6923 68.34 0.7349870 -0.173
+## 3 0.5558 50 0.6600 38.36 0.9434576  1.055
+## 4 2.6448 36 0.7500 73.44 0.6608226  0.895
+## 5 2.1081 50 0.5000 65.50 0.6157819 -0.009
+## 6 0.8378 50 0.7000 41.56 1.0080820 -0.600</code></pre>
+<p>The table below provides the interpretation of the output:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>a</code></td>
+<td>Decimal age in years</td>
+</tr>
+<tr class="even">
+<td><code>n</code></td>
+<td>Number of items used to calculate the <span class="math inline">\(D\)</span>-score</td>
+</tr>
+<tr class="odd">
+<td><code>p</code></td>
+<td>Proportion of passed milestones</td>
+</tr>
+<tr class="even">
+<td><code>d</code></td>
+<td><span class="math inline">\(D\)</span>-score (posterior mean)</td>
+</tr>
+<tr class="odd">
+<td><code>sem</code></td>
+<td>Standard error of measurement (posterior standard deviation)</td>
+</tr>
+<tr class="even">
+<td><code>daz</code></td>
+<td><span class="math inline">\(D\)</span>-score corrected for age</td>
+</tr>
+</tbody>
+</table>
+<p>The number of rows of <code>result</code> is equal to the number of
+rows of <code>sf</code>. We save the result for later processing.</p>
+<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>sf3 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(sf, results)</span></code></pre></div>
+<p>It is possible to calculate <span class="math inline">\(D\)</span>-score for item subsets by setting the
+<code>items</code> argument. We do not advertise this option for
+practical application, but suppose we are interested in the <span class="math inline">\(D\)</span>-score based on items from
+<code>gpa</code> and <code>gto</code> for domains <code>mo</code> or
+<code>gm</code> (motor) only. The “motor” <span class="math inline">\(D\)</span>-score can be calculated as follows:</p>
+<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>items_motor <span class="ot">&lt;-</span> <span class="fu">get_itemnames</span>(<span class="at">instrument =</span> <span class="fu">c</span>(<span class="st">&quot;gpa&quot;</span>, <span class="st">&quot;gto&quot;</span>), <span class="at">domain =</span> <span class="fu">c</span>(<span class="st">&quot;mo&quot;</span>, <span class="st">&quot;gm&quot;</span>))</span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">dscore</span>(sf, <span class="at">items =</span> items_motor, <span class="at">xname =</span> <span class="st">&quot;agedays&quot;</span>, <span class="at">xunit =</span> <span class="st">&quot;days&quot;</span>)</span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(results)</span></code></pre></div>
+<pre><code>##        a  n      p     d      sem    daz
+## 1 2.2204  5 1.0000 71.56 3.032380  1.422
+## 2 2.4586  5 1.0000 72.44 3.333409  1.038
+## 3 0.5558 33 0.5758 38.36 1.013070  1.055
+## 4 2.6448  6 0.6667 74.29 1.553734  1.151
+## 5 2.1081  8 0.7500 73.86 1.608503  2.383
+## 6 0.8378 32 0.6250 41.03 1.195306 -0.738</code></pre>
+</div>
+</div>
+<div id="gsed-lf-v0" class="section level3">
+<h3><code>GSED LF V0</code></h3>
+<p>The <code>GSED LF V0</code> instrument contains 155 items and has
+instrument code <code>gto</code>.</p>
+<div id="check-4" class="section level4">
+<h4>Check</h4>
+<p>Obtain the full list of item name for as</p>
+<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>instrument <span class="ot">&lt;-</span> <span class="st">&quot;gto&quot;</span></span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a>items <span class="ot">&lt;-</span> <span class="fu">get_itemnames</span>(<span class="at">instrument =</span> instrument)</span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(items)</span></code></pre></div>
+<pre><code>## [1] 155</code></pre>
+<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(items)</span></code></pre></div>
+<pre><code>## [1] &quot;gtofmd001&quot; &quot;gtofmd002&quot; &quot;gtofmd003&quot; &quot;gtofmd004&quot; &quot;gtofmd005&quot; &quot;gtofmd006&quot;</code></pre>
+<p>Reorder item names so that they corresponds to streams A, B and C,
+respectively.</p>
+<div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>items <span class="ot">&lt;-</span> items[<span class="fu">c</span>(<span class="dv">55</span><span class="sc">:</span><span class="dv">155</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">54</span>)]</span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(items)</span></code></pre></div>
+<pre><code>## [1] &quot;gtogmd001&quot; &quot;gtogmd002&quot; &quot;gtogmd003&quot; &quot;gtogmd004&quot; &quot;gtogmd005&quot; &quot;gtogmd006&quot;</code></pre>
+<p>Check that you have the correct version by comparing the labels of
+the first few items as:</p>
+<div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>labels <span class="ot">&lt;-</span> <span class="fu">get_labels</span>(items)</span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">cbind</span>(items, <span class="fu">substr</span>(labels, <span class="dv">1</span>, <span class="dv">50</span>)))</span></code></pre></div>
+<pre><code>##           items                                                          
+## gtogmd001 &quot;gtogmd001&quot; &quot;A1. Lifts head in prone 45 degrees&quot;               
+## gtogmd002 &quot;gtogmd002&quot; &quot;A2. Frolics alone - moving body, kicking legs&quot;    
+## gtogmd003 &quot;gtogmd003&quot; &quot;A3. Frolics with mother or caregiver responsively&quot;
+## gtogmd004 &quot;gtogmd004&quot; &quot;A4. Hands together in front of face&quot;              
+## gtogmd005 &quot;gtogmd005&quot; &quot;A5. Balances head well while suppported&quot;          
+## gtogmd006 &quot;gtogmd006&quot; &quot;A6. Pulls to sit - no head lag&quot;</code></pre>
+</div>
+<div id="renaming-example-4" class="section level4">
+<h4>Renaming example</h4>
+<p>Suppose that you stored your data with items names <code>lf001</code>
+to <code>lf155</code>. For example,</p>
+<div class="sourceCode" id="cb75"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a>lf <span class="ot">&lt;-</span> dscore<span class="sc">::</span>sample_lf</span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(lf[, <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="dv">60</span><span class="sc">:</span><span class="dv">64</span>)])</span></code></pre></div>
+<pre><code>##   subjid agedays lf058 lf059 lf060 lf061 lf062
+## 1      1     811    NA    NA    NA    NA    NA
+## 2      2     898    NA    NA    NA    NA    NA
+## 3      3     203     0     0     0    NA    NA
+## 4      4     966    NA    NA    NA    NA    NA
+## 5      8     770     0     0     0     0     0
+## 6      9     306     1     1     0     1     0</code></pre>
+<p>Make sure that the items are in the correct order. Rename the columns
+with gsed 9-position item names.</p>
+<div class="sourceCode" id="cb77"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(lf)[<span class="dv">3</span><span class="sc">:</span><span class="dv">157</span>] <span class="ot">&lt;-</span> items</span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(lf[, <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="dv">60</span><span class="sc">:</span><span class="dv">64</span>)])</span></code></pre></div>
+<pre><code>##   subjid agedays gtolgd009 gtolgd010 gtolgd011 gtolgd012 gtolgd013
+## 1      1     811        NA        NA        NA        NA        NA
+## 2      2     898        NA        NA        NA        NA        NA
+## 3      3     203         0         0         0        NA        NA
+## 4      4     966        NA        NA        NA        NA        NA
+## 5      8     770         0         0         0         0         0
+## 6      9     306         1         1         0         1         0</code></pre>
+<p>The data in <code>lf</code> are now ready for the
+<code>dscore()</code> function.</p>
+</div>
+<div id="calculate-d-score-4" class="section level4">
+<h4>Calculate <span class="math inline">\(D\)</span>-score</h4>
+<p>Once the data are in proper shape, calculation of the <span class="math inline">\(D\)</span>-score is straightforward. The
+<code>lf</code> dataset has properly named columns that identify each
+item.</p>
+<div class="sourceCode" id="cb79"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">dscore</span>(lf, <span class="at">xname =</span> <span class="st">&quot;agedays&quot;</span>, <span class="at">xunit =</span> <span class="st">&quot;days&quot;</span>)</span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(results)</span></code></pre></div>
+<pre><code>##        a  n      p     d       sem    daz
+## 1 2.2204 45 0.5556 67.05 0.6298725  0.100
+## 2 2.4586 53 0.6226 70.81 0.5687583  0.552
+## 3 0.5558 34 0.5588 34.12 0.8401395 -0.153
+## 4 2.6448 54 0.5185 70.82 0.5355771  0.109
+## 5 2.1081 58 0.1724 37.47 1.1938151 -4.448
+## 6 0.8378 32 0.5625 44.90 0.7644616  0.315</code></pre>
+<p>The table below provides the interpretation of the output:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>a</code></td>
+<td>Decimal age in years</td>
+</tr>
+<tr class="even">
+<td><code>n</code></td>
+<td>Number of items used to calculate the <span class="math inline">\(D\)</span>-score</td>
+</tr>
+<tr class="odd">
+<td><code>p</code></td>
+<td>Proportion of passed milestones</td>
+</tr>
+<tr class="even">
+<td><code>d</code></td>
+<td><span class="math inline">\(D\)</span>-score (posterior mean)</td>
+</tr>
+<tr class="odd">
+<td><code>sem</code></td>
+<td>Standard error of measurement (posterior standard deviation)</td>
+</tr>
+<tr class="even">
+<td><code>daz</code></td>
+<td><span class="math inline">\(D\)</span>-score corrected for age</td>
+</tr>
+</tbody>
+</table>
+<p>The number of rows of <code>result</code> is equal to the number of
+rows of <code>lf</code>. We save the result for later processing.</p>
+<div class="sourceCode" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a>lf3 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(lf, results)</span></code></pre></div>
+<p>It is possible to calculate <span class="math inline">\(D\)</span>-score for item subsets by setting the
+<code>items</code> argument. We do not advertise this option for
+practical application, but suppose we are interested in the <span class="math inline">\(D\)</span>-score based on items from
+<code>gpa</code> and <code>gto</code> for domains <code>mo</code> or
+<code>gm</code> (motor) only. The “motor” <span class="math inline">\(D\)</span>-score can be calculated as follows:</p>
+<div class="sourceCode" id="cb82"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a>items_motor <span class="ot">&lt;-</span> <span class="fu">get_itemnames</span>(<span class="at">instrument =</span> <span class="fu">c</span>(<span class="st">&quot;gpa&quot;</span>, <span class="st">&quot;gto&quot;</span>), <span class="at">domain =</span> <span class="fu">c</span>(<span class="st">&quot;mo&quot;</span>, <span class="st">&quot;gm&quot;</span>))</span>
+<span id="cb82-2"><a href="#cb82-2" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">dscore</span>(lf, <span class="at">items =</span> items_motor, <span class="at">xname =</span> <span class="st">&quot;agedays&quot;</span>, <span class="at">xunit =</span> <span class="st">&quot;days&quot;</span>)</span>
+<span id="cb82-3"><a href="#cb82-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(results)</span></code></pre></div>
+<pre><code>##        a  n      p     d       sem    daz
+## 1 2.2204 12 0.5833 65.21 2.3290743 -0.422
+## 2 2.4586 18 0.6111 71.28 0.9180576  0.692
+## 3 0.5558 19 0.6842 35.72 0.9818575  0.297
+## 4 2.6448 12 0.4167 65.84 2.1798200 -1.266
+## 5 2.1081 12 0.5000 56.44 1.6829750 -2.217
+## 6 0.8378 14 0.7143 43.12 1.4337713 -0.182</code></pre>
+</div>
+</div>
+</div>
+<div id="section" class="section level2 unnumbered">
+<h2 class="unnumbered"></h2>
+<div id="phase-1-references-and-daz" class="section level3">
+<h3>Phase 1 references and DAZ</h3>
+<p>We used the GSED Phase I data to calculate age-conditional reference
+scores for the <span class="math inline">\(D\)</span>-score. The
+references are based on about 12,000 administration of the GSED SF and
+GSED LF from Bangladesh, Pakistan and Tanzania. Extract the references
+as</p>
+<div class="sourceCode" id="cb84"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr, <span class="at">warn.conflicts =</span> <span class="cn">FALSE</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb84-2"><a href="#cb84-2" aria-hidden="true" tabindex="-1"></a>ref <span class="ot">&lt;-</span> builtin_references <span class="sc">%&gt;%</span> </span>
+<span id="cb84-3"><a href="#cb84-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(pop <span class="sc">==</span> <span class="st">&quot;phase1&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb84-4"><a href="#cb84-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(pop, age, mu, sigma, nu, tau, SDM2, SD0, SDP2)</span>
+<span id="cb84-5"><a href="#cb84-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ref)</span></code></pre></div>
+<pre><code>##      pop    age    mu  sigma     nu    tau     SDM2      SD0     SDP2
+## 1 phase1 0.0383 13.68 0.2456 1.1731 15.422 6.042690 13.68707 20.71620
+## 2 phase1 0.0575 14.36 0.2324 1.2062 15.540 6.699401 14.36568 21.30880
+## 3 phase1 0.0767 15.02 0.2206 1.2375 15.652 7.354450 15.02457 21.88555
+## 4 phase1 0.0958 15.68 0.2100 1.2670 15.758 8.014796 15.68368 22.47481
+## 5 phase1 0.1150 16.35 0.2005 1.2951 15.860 8.680976 16.35299 23.09062
+## 6 phase1 0.1342 17.03 0.1917 1.3218 15.957 9.363085 17.03241 23.72268</code></pre>
+<p>The columns <code>mu</code>, <code>sigma</code>, <code>nu</code> and
+<code>tau</code> are the age-varying parameters of a Box-Cox <span class="math inline">\(t\)</span> (BCT) distribution.</p>
+<p>The script below creates a figure with -2SD, 0SD and +2SD centiles
+plus 20 <span class="math inline">\(D\)</span>-scores (10 LF and 10 SF)
+for the <code>lf2</code> and <code>sf2</code> data.</p>
+<div class="sourceCode" id="cb86"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb86-1"><a href="#cb86-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb86-2"><a href="#cb86-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
+<span id="cb86-3"><a href="#cb86-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb86-4"><a href="#cb86-4" aria-hidden="true" tabindex="-1"></a>r <span class="ot">&lt;-</span> builtin_references <span class="sc">%&gt;%</span> </span>
+<span id="cb86-5"><a href="#cb86-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(pop <span class="sc">==</span> <span class="st">&quot;phase1&quot;</span> <span class="sc">&amp;</span> age <span class="sc">&lt;=</span> <span class="fl">3.5</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb86-6"><a href="#cb86-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">m =</span> age <span class="sc">*</span> <span class="dv">12</span>)</span>
+<span id="cb86-7"><a href="#cb86-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb86-8"><a href="#cb86-8" aria-hidden="true" tabindex="-1"></a>lf2<span class="sc">$</span>ins <span class="ot">&lt;-</span> <span class="st">&quot;lf&quot;</span>; lf2<span class="sc">$</span>m <span class="ot">&lt;-</span> lf2<span class="sc">$</span>a <span class="sc">*</span> <span class="dv">12</span></span>
+<span id="cb86-9"><a href="#cb86-9" aria-hidden="true" tabindex="-1"></a>sf2<span class="sc">$</span>ins <span class="ot">&lt;-</span> <span class="st">&quot;sf&quot;</span>; sf2<span class="sc">$</span>m <span class="ot">&lt;-</span> sf2<span class="sc">$</span>a <span class="sc">*</span> <span class="dv">12</span></span>
+<span id="cb86-10"><a href="#cb86-10" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(lf2, sf2)</span>
+<span id="cb86-11"><a href="#cb86-11" aria-hidden="true" tabindex="-1"></a>g1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(data, <span class="fu">aes</span>(<span class="at">x =</span> m, <span class="at">y =</span> d, <span class="at">group =</span> ins, <span class="at">color =</span> ins)) <span class="sc">+</span> </span>
+<span id="cb86-12"><a href="#cb86-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_light</span>() <span class="sc">+</span></span>
+<span id="cb86-13"><a href="#cb86-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">&quot;polygon&quot;</span>, <span class="at">x =</span> <span class="fu">c</span>(r<span class="sc">$</span>age, <span class="fu">rev</span>(r<span class="sc">$</span>age)),</span>
+<span id="cb86-14"><a href="#cb86-14" aria-hidden="true" tabindex="-1"></a>           <span class="at">y =</span> <span class="fu">c</span>(r<span class="sc">$</span>SDM2, <span class="fu">rev</span>(r<span class="sc">$</span>SDP2)), <span class="at">alpha =</span> <span class="fl">0.06</span>, <span class="at">fill =</span> <span class="st">&quot;#C5EDDE&quot;</span>) <span class="sc">+</span></span>
+<span id="cb86-15"><a href="#cb86-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">&quot;line&quot;</span>, <span class="at">x =</span> r<span class="sc">$</span>m, <span class="at">y =</span> r<span class="sc">$</span>SDM2, <span class="at">lwd =</span> <span class="fl">0.5</span>, <span class="at">color =</span> <span class="st">&quot;#C5EDDE&quot;</span>) <span class="sc">+</span></span>
+<span id="cb86-16"><a href="#cb86-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">&quot;line&quot;</span>, <span class="at">x =</span> r<span class="sc">$</span>m, <span class="at">y =</span> r<span class="sc">$</span>SDP2, <span class="at">lwd =</span> <span class="fl">0.5</span>, <span class="at">color =</span> <span class="st">&quot;#C5EDDE&quot;</span>) <span class="sc">+</span></span>
+<span id="cb86-17"><a href="#cb86-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">&quot;line&quot;</span>, <span class="at">x =</span> r<span class="sc">$</span>m, <span class="at">y =</span> r<span class="sc">$</span>SD0, <span class="at">lwd =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">&quot;#C5EDDE&quot;</span>) <span class="sc">+</span></span>
+<span id="cb86-18"><a href="#cb86-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="st">&quot;Age (in months)&quot;</span>,</span>
+<span id="cb86-19"><a href="#cb86-19" aria-hidden="true" tabindex="-1"></a>                     <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">42</span>),</span>
+<span id="cb86-20"><a href="#cb86-20" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">42</span>, <span class="dv">12</span>)) <span class="sc">+</span></span>
+<span id="cb86-21"><a href="#cb86-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(</span>
+<span id="cb86-22"><a href="#cb86-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">expression</span>(<span class="fu">paste</span>(<span class="fu">italic</span>(D), <span class="st">&quot;-score&quot;</span>, <span class="at">sep =</span> <span class="st">&quot;&quot;</span>)),</span>
+<span id="cb86-23"><a href="#cb86-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">80</span>, <span class="dv">20</span>),</span>
+<span id="cb86-24"><a href="#cb86-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">90</span>)) <span class="sc">+</span></span>
+<span id="cb86-25"><a href="#cb86-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb86-26"><a href="#cb86-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)</span>
+<span id="cb86-27"><a href="#cb86-27" aria-hidden="true" tabindex="-1"></a>g2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(data, <span class="fu">aes</span>(<span class="at">x =</span> m, <span class="at">y =</span> daz, <span class="at">group =</span> ins, <span class="at">color =</span> ins)) <span class="sc">+</span> </span>
+<span id="cb86-28"><a href="#cb86-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_light</span>() <span class="sc">+</span></span>
+<span id="cb86-29"><a href="#cb86-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="st">&quot;Age (in months)&quot;</span>,</span>
+<span id="cb86-30"><a href="#cb86-30" aria-hidden="true" tabindex="-1"></a>                     <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">42</span>),</span>
+<span id="cb86-31"><a href="#cb86-31" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">42</span>, <span class="dv">12</span>)) <span class="sc">+</span></span>
+<span id="cb86-32"><a href="#cb86-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(</span>
+<span id="cb86-33"><a href="#cb86-33" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;DAZ&quot;</span>,</span>
+<span id="cb86-34"><a href="#cb86-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">2</span>),</span>
+<span id="cb86-35"><a href="#cb86-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">limits =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">5</span>, <span class="dv">5</span>)) <span class="sc">+</span></span>
+<span id="cb86-36"><a href="#cb86-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb86-37"><a href="#cb86-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)</span>
+<span id="cb86-38"><a href="#cb86-38" aria-hidden="true" tabindex="-1"></a>g1 <span class="sc">+</span> g2</span></code></pre></div>
+<p><img src="data:image/png;base64,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1NRkRVe268Op6wYh1dXVJQ0NDbZjbsWA8FvixO8b5oW1C4fDVmCyVR+xWMz47bfipHjbtm0yf/78sv4M4GRs586dcsIJJ+S9TolEQuLxuNTU1OTdl906SCaTxkUTJ5439Pb2it/v5zmR3T50k4yH50STALLhyxDA+L41NjbacHT5D8mqc1loPjQK4GNrgg/MwoULjz2b+V1bW5tEIhEJhUIz78Sme+IHsba21qajy39YVqx//qOwvgenrhtOrnHC2NLSYj20Evdo/iFz4sl+T0+PIYDr6upKTNn6w8ObCL/9VlgpDxw4YP0AS9BjVVWVJX9bceEEfJubm0swi8IeEsIe33lcPHdaw8kmPgO4Oa059W+ruU48JzJJlMc9Lizjbw8unDqxWfl9w0XHmTbn+ffOlAT3IwESIAESIAESIAESIAESIAEScDQBCmBHLy8nRwIkQAIkQAIkQAIkQAIkQAIkYBKgADZJ8J4ESIAESIAESIAESIAESIAESMDRBCiAHb28nBwJkAAJkAAJkAAJkAAJkAAJkIBJgALYJMF7EiABEiABEiABEiABEiABEiABRxOgAHb08nJyJEACJEACJEACJEACJEACJEACJgEKYJME70mABEiABEiABEiABEiABEiABBxNgALY0cvLyZEACZAACZAACZAACZAACZAACZgEKIBNErwnARIgARIgARIgARIgARIgARJwNAEKYEcvLydHAiRAAiRAAiRAAiRAAiRAAiRgEqAANknwngRIgARIgARIgARIgARIgARIwNEEKIAdvbycHAmQAAmQAAmQAAmQAAmQAAmQgEmAAtgkwXsSIAESIAESIAESIAESIAESIAFHE6AAdvTycnIkQAIkQAIkQAIkQAIkQAIkQAImAQpgkwTvSYAESIAESIAESIAESIAESIAEHE2AAtjRy8vJkQAJkAAJkAAJkAAJkAAJkAAJmAS85gMn3GcyGYlGo9Ld3Z33dGKxmNFHIpHIuy+7dTAwMGC3IVk2nlQqZcn6WzYgCzty6rrhe4vvmRXfWwtxW9LV4OCg4LcE905r+K3FvFwul9OmZqxZMpkUtzv/a8RO+Rti1XcU/eA74cTvOz4zaPF43JHfCXzfzTk6aYJO/duKNeI5Ufl9Us3vmRN/I7EaVn3f0I/H45nxAjtKAONkpaqqSmpra2cMxNwRf6QjkYiEQiFzk6PurWBkRyD4wXDq3MDbiXNLp9PGD6IT54Y/ZPhdqqmpsePXJa8xQfji4oUT1w1/VPHbn88fVxOu3+83H5b1PeZhxVrjwgmaFX3ZDSiEL77zwWDQbkPLezwQvji/ws2JzYmfR6wTz4nK79OKv6t9fX2O/I00V8OK7xs+2/lckMv/8rY5G96TAAmQAAmQAAmQAAmQAAmQAAmQgI0JUADbeHE4NBIgARIgARIgARIgARIgARIgAesIUABbx5I9kQAJkAAJkAAJkAAJkAAJkAAJ2JgABbCNF4dDIwESIAESIAESIAESIAESIAESsI4ABbB1LNkTCZAACZAACZAACZAACZAACZCAjQlQANt4cTg0EiABEiABEiABEiABEiABEiAB6whQAFvHkj2RAAmQAAmQAAmQAAmQAAmQAAnYmAAFsI0Xh0MjARIgARIgARIgARIgARIgARKwjgAFsHUs2RMJkAAJkAAJkAAJkAAJkAAJkICNCVAA23hxODQSIAESIAESIAESIAESIAESIAHrCFAAW8eSPZEACZAACZAACZAACZAACZAACdiYAAWwjReHQyMBEiABEiABEiABEiABEiABErCOAAWwdSzZEwmQAAmQAAmQAAmQAAmQAAmQgI0JUADbeHE4NBIgARIgARIgARIgARIgARIgAesIUABbx5I9kQAJkAAJkAAJkAAJkAAJkAAJ2JgABbCNF4dDIwESIAESIAESIAESIAESIAESsI4ABbB1LNkTCZAACZAACZAACZAACZAACZCAjQlQANt4cTg0EiABEiABEiABEiABEiABEiAB6whQAFvHkj2RAAmQAAmQAAmQAAmQAAmQAAnYmAAFsI0Xh0MjARIgARIgARIgARIgARIgARKwjgAFsHUs2RMJkAAJkAAJkAAJkAAJkAAJkICNCVAA23hxODQSIAESIAESIAESIAESIAESIAHrCFAAW8eSPZEACZAACZAACZAACZAACZAACdiYAAWwjReHQyMBEiABEiABEiABEiABEiABErCOAAWwdSzZEwmQAAmQAAmQAAmQAAmQAAmQgI0JUADbeHE4NBIgARIgARIgARIgARIgARIgAesIUABbx5I9kQAJkAAJkAAJkAAJkAAJkAAJ2JgABbCNF4dDIwESIAESIAESIAESIAESIAESsI4ABbB1LNkTCZAACZAACZAACZAACZAA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hx12mI9/+NJLL2UDPWVAAAIQgEAWCOzcudM+9rGP2be+9S176KGHslCiWWdnp33lK1+xU0891ZenmLt33313VsoOoxDV9Y1vfGM8q1/+8pdpK8AK0zNr1qz4WB3PlAMI5BkBFOA86zCqmx8EfvKTn9hnP/tZ00rw7373u6xU+nOf+5x99atf9WWVlpZaV1eXve51r8tK2WEU8thjj4WRTTyPiy++2L7whS/E33MAAQhAAAL5TeCmm26y+fPn2zve8Q679tprs9KYa665xk477TSbMGGCL++3v/2t6Vy+iCyi9CwSlnz84x+3H/3oR7Z9+/awsiQfCGSdAApw1pFTYNQJaNXxr3/9q7397W/3f8kG6VdffdUuueQS+9d//Ve79NJLfXq9T5T/+7//s7POOsve+ta32v/8z/8MupKsAXnz5s12zDHH+Cy0gvrhD3/Yli9f7t9fffXVds8999gNN9xg//Zv/2bvfve77b777kssrs+x0t9777123XXX+fI14646yyRZg9+73vUu0yp3oqj8z3/+83b66afb+973Pl9ecF3KuOqjPL74xS/aG97wBm9GtXHjRp9E5srKW5MF//Vf/xXcZg0NDSZFVukvuugi27RpU/zarl27/Ky8yvv3f/93+/GPf2y9vb3x65rx/stf/mJ///vf4+c4gAAEIACB/CWgMUzjpsawYNxLbE1HR4dXTjXO/cd//IctW7bMjz3r16+PJ3vmmWf8OY0dn/70p23Dhg3xa/0PNM7Imuo973lP/NL//u//2i9+8Qv/XpZXl19+uT3xxBO+PNVN45m2ISUTpdcY9+ijj9oHP/hBe+c732naKqUxW+ff8pa3+Pt37NgRv115SeHUM4WeB6688ko/wa0EQ42tWiW/7bbb/NYojcFaQZdorNREvfJ7//vfbw8++KA/H/z385//3D8rqD1f+tKXLLE+FRUVdsopp/hV+CA9rxDINwIowPnWY9Q35wn89Kc/NZngLl682A8sDzzwgK1cuTJeb82a/su//Iv9+c9/9oOPBigNerfeems8zYUXXuhXkOfMmWOvfe1r7Tvf+Y4fKOMJ+h3IJOttb3tb/Kz26UghDAZ9Kb/nn3++ae+UytaAKqXyxRdfjN+TeKD0enjQwKyZ77/97W++jnqoqK2ttXnz5nml88knn/S3aVA98sgjvVmYBlSVrzYFyr/K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" /><!-- --></p>
+</div>
+</div>
+<div id="references" class="section level2 unnumbered">
+<h2 class="unnumbered">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-mccray2023" class="csl-entry">
+McCray, G, D McCoy, P Kariger, M Janus, MM Black, SM Chang, F Tofail, et
+al. 2023. <span>“The Creation of the <span class="nocase">Global Scales
+for Early Development</span> (GSED) for Children Aged 0-3 Years:
+Combining Subject Matter Expert Judgements with Big Data.”</span>
+<em>BMJ Glob Health</em> 8 (1).
+</div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
