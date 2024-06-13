@@ -1,9 +1,9 @@
-#' D-score standard deviation score: DAZ
+#' Calculate Development-for-Age Z-score (DAZ)
 #'
-#' The `daz()` function calculated the
-#' "Development for Age Z-score".
-#' The DAZ represents a child's D-score after adjusting
-#' for age by an external age-conditional reference.
+#' The `daz()` function calculated the Development-for-Age Z-score (DAZ).
+#' The DAZ represents a child's D-score after adjusting for age by an
+#' external age-conditional reference.
+#'
 #' The `zad()` is the inverse of `daz()`: Given age and
 #' the Z-score, it finds the raw D-score.
 #'
@@ -11,99 +11,123 @@
 #' @param d Vector of D-scores
 #' @param z Vector of standard deviation scores (DAZ)
 #' @param x Vector of ages (decimal age)
-#' @param reference A `data.frame` with the LMS reference values.
-#' The default uses the `get_reference()` function. This selects
-#' a subset of rows from the `builtin_references` using its
-#' default `pop` argument.
+#' @param reference_table A `data.frame` with the LMS or BCT reference values.
+#' The default `NULL` selects the default reference belonging to the `key`,
+#' as specified in the `base_population` field in `dscore::builtin_keys`.
 #' @param dec The number of decimals (default `dec = 3`).
-#' @return The `daz()` function return a named vector with
-#' Z-scores with `length(d)` elements
+#' @param verbose Print out the used reference table (default `verbose = FALSE`).
+#' @return Unnamed numeric vector with Z-scores of length `length(d)`.
+#' @details
+#'
+#' Note 1: The Box-Cox Cole and Green (BCCG) and Box-Cox t (BCT)
+#' distributions model only positive D-score values. To increase
+#' robustness, the `daz()` and `zad()` functions will round up any
+#' D-scores lower than 1.0 to 1.0.
+#'
+#' Note 2: The `daz()` and `zad()` function call modified version of the
+#' `pBCT()` and `qBCT()` functions from `gamlss` for better handling
+#' of `NA`'s and rounding.
 #' @references
 #' Cole TJ, Green PJ (1992). Smoothing reference centile curves: The LMS
 #' method and penalized likelihood. Statistics in Medicine, 11(10),
 #' 1305-1319.
-#' @seealso [dscore()]
-#' @author Stef van Buuren 2020
+#' @seealso [dscore()][get_reference()]
+#' @author Stef van Buuren
 #' @examples
-#' # using gcdg-reference
+#' # using default reference and key
 #' daz(d = c(35, 50), x = c(0.5, 1.0))
 #'
-#' # using Dutch reference
-#' daz(d = c(35, 50), x = c(0.5, 1.0), reference = get_reference("dutch"))
+#' # print out names of the used reference table
+#' daz(d = c(35, 50), x = c(0.5, 1.0), verbose = TRUE)
+#'
+#' # using the default reference in key gcdg
+#' reftab <- get_reference(key = "gcdg")
+#' daz(d = c(35, 50), x = c(0.5, 1.0), reference_table = reftab)
+#'
+#' # using Dutch reference in default key
+#' reftab <- get_reference(population = "dutch", verbose = TRUE)
+#' daz(d = c(35, 50), x = c(0.5, 1.0), reference_table = reftab)
 #' @export
-daz <- function(d, x = as.numeric(names(d)),
-                reference = get_reference(),
-                dec = 3) {
+daz <- function(d, x, reference_table = NULL, dec = 3, verbose = FALSE) {
   if (length(d) != length(x)) stop("Arguments `x` and  `d` of different length")
-  pop <- reference$pop[1]
 
-  if (pop %in% c("gcdg", "dutch")) {
-    # LMS reference
-    l <- approx(x = reference[, "age"], y = reference[, "nu"], xout = x)$y
-    m <- approx(x = reference[, "age"], y = reference[, "mu"], xout = x)$y
-    s <- approx(x = reference[, "age"], y = reference[, "sigma"], xout = x)$y
+  if (is.null(reference_table)) {
+    rt <- get_reference(verbose = verbose)
+  } else {
+    rt <- reference_table
+  }
+
+  # Return NA if there is no reference
+  if (!nrow(rt)) {
+    return(rep(NA_real_, length(d)))
+  }
+
+  dist <- rt$distribution[1L]
+  if (dist == "LMS") {
+    l <- approx(x = rt[, "age"], y = rt[, "nu"], xout = x)$y
+    m <- approx(x = rt[, "age"], y = rt[, "mu"], xout = x)$y
+    s <- approx(x = rt[, "age"], y = rt[, "sigma"], xout = x)$y
     z <- ifelse(l > 0.01 | l < (-0.01),
                 (((d / m)^l) - 1) / (l * s),
-                log(d / m) / s
-    )
-  }
-
-  if (pop %in% c("phase1")) {
-    # BCT reference
-    mu <- approx(x = reference[, "age"], y = reference[, "mu"], xout = x)$y
-    sigma <- approx(x = reference[, "age"], y = reference[, "sigma"], xout = x)$y
-    nu <- approx(x = reference[, "age"], y = reference[, "nu"], xout = x)$y
-    tau <- approx(x = reference[, "age"], y = reference[, "tau"], xout = x)$y
+                log(d / m) / s)
+  } else if (dist == "BCT") {
+    mu <- approx(x = rt[, "age"], y = rt[, "mu"], xout = x)$y
+    sigma <- approx(x = rt[, "age"], y = rt[, "sigma"], xout = x)$y
+    nu <- approx(x = rt[, "age"], y = rt[, "nu"], xout = x)$y
+    tau <- approx(x = rt[, "age"], y = rt[, "tau"], xout = x)$y
     z <- qnorm(pBCT(d, mu, sigma, nu, tau))
+  } else {
+    stop("Unknown distribution '", dist, "'.")
   }
 
-  names(z) <- as.character(x)
   return(round(z, dec))
 }
 
-#' @return The `zad()` function returns a vector with D-scores
-#' with `length(z)` elements.
+#' @return Unnamed numeric vector with D-scores of length `length(z)`.
 #' @rdname daz
 #' @examples
-#' # population median at ages 0.5, 1 and 2 years, gcdg reference
+#' # population median at ages 0.5, 1 and 2 years, default reference
 #' zad(z = rep(0, 3), x = c(0.5, 1, 2))
 #'
-#' # population median at ages 0.5, 1 and 2 years, dutch reference
-#' zad(z = rep(0, 3), x = c(0.5, 1, 2), reference = get_reference("dutch"))
+#' # population median at ages 0.5, 1 and 2 years, gcdg key
+#' reftab <- get_reference(key = "gcdg", verbose = TRUE)
+#' zad(z = rep(0, 3), x = c(0.5, 1, 2), reference_table = reftab)
 #'
-#' # percentiles of D-score reference
-#' g <- expand.grid(age = seq(0.1, 2, 0.1), p = c(0.1, 0.5, 0.9))
-#' d <- zad(z = qnorm(g$p), x = g$age)
-#' matplot(
-#'   x = matrix(g$age, ncol = 3), y = matrix(d, ncol = 3), type = "l",
-#'   lty = 1, col = "blue", xlab = "Age (years)", ylab = "D-score"
-#' )
+#' # population median at ages 0.5, 1 and 2 years, dutch key
+#' reftab <- get_reference(key = "dutch", verbose = TRUE)
+#' zad(z = rep(0, 3), x = c(0.5, 1, 2), reference = reftab)
 #' @export
-zad <- function(z, x = as.numeric(names(z)),
-                reference = get_reference(),
-                dec = 2) {
+zad <- function(z, x, reference_table = NULL, dec = 2, verbose = FALSE) {
   if (length(z) != length(x)) stop("Arguments `x` and  `z` of different length")
-  pop <- reference$pop[1]
 
-  if (pop %in% c("gcdg", "dutch")) {
-    # LMS reference
-    mu <- approx(reference[, "age"], reference[, "mu"], xout = x)$y
-    sigma <- approx(reference[, "age"], reference[, "sigma"], xout = x)$y
-    nu <- approx(reference[, "age"], reference[, "nu"], xout = x)$y
+  if (is.null(reference_table)) {
+    rt <- get_reference(verbose = verbose)
+  } else {
+    rt <- reference_table
+  }
+
+  # Return NA if there is no reference
+  if (!nrow(rt)) {
+    return(rep(NA_real_, length(z)))
+  }
+
+  dist <- rt$distribution[1L]
+  if (dist == "LMS") {
+    mu <- approx(rt[, "age"], rt[, "mu"], xout = x)$y
+    sigma <- approx(rt[, "age"], rt[, "sigma"], xout = x)$y
+    nu <- approx(rt[, "age"], rt[, "nu"], xout = x)$y
     d <- ifelse(nu > 0.01 | nu < (-0.01),
-                mu * ((nu * sigma * z + 1) ^ (1 / nu)),
+                mu * ((nu * sigma * z + 1)^(1 / nu)),
                 mu * exp(sigma * z))
-  }
-
-  if (pop %in% c("phase1")) {
-    # BCT reference
-    mu <- approx(x = reference[, "age"], y = reference[, "mu"], xout = x)$y
-    sigma <- approx(x = reference[, "age"], y = reference[, "sigma"], xout = x)$y
-    nu <- approx(x = reference[, "age"], y = reference[, "nu"], xout = x)$y
-    tau <- approx(x = reference[, "age"], y = reference[, "tau"], xout = x)$y
+  } else if (dist == "BCT") {
+    mu <- approx(x = rt[, "age"], y = rt[, "mu"], xout = x)$y
+    sigma <- approx(x = rt[, "age"], y = rt[, "sigma"], xout = x)$y
+    nu <- approx(x = rt[, "age"], y = rt[, "nu"], xout = x)$y
+    tau <- approx(x = rt[, "age"], y = rt[, "tau"], xout = x)$y
     d <- qBCT(pnorm(z), mu, sigma, nu, tau)
+  } else {
+    stop("Unknown distribution '", dist, "'.")
   }
 
-  names(d) <- as.character(x)
   return(round(d, dec))
 }

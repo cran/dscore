@@ -3,11 +3,13 @@
 \docType{data}
 \name{builtin_references}
 \alias{builtin_references}
-\title{Age-conditional reference distribution of D-score}
+\title{Collection of age-conditional reference distributions}
 \format{
-A \code{data.frame} with 265 rows and 17 variables:\tabular{ll}{
+A \code{data.frame} with the following variables:\tabular{ll}{
    Name \tab Label \cr
-   \code{pop} \tab Population, either \code{"dutch"}, \code{"gcdg"} or \code{"phase1"} \cr
+   \code{population} \tab Name of the reference population \cr
+   \code{key} \tab D-score key, e.g., \code{"dutch"}, \code{"gcdg"} or \code{"gsed"} \cr
+   \code{distribution} \tab Distribution family: \code{"LMS"} or \code{"BCT"} \cr
    \code{age} \tab Decimal age in years \cr
    \code{mu} \tab M-curve, median D-score, P50 \cr
    \code{sigma} \tab S-curve, spread expressed as coefficient of variation \cr
@@ -37,9 +39,10 @@ after the LMS distribution (Cole & Green, 1992) or BCT model
 (Stasinopoulos & Rigby, 2022) and is equal for
 both boys and girls. The LMS/BCT values can be used to graph
 reference charts and to calculate age-conditional Z-scores, also
-known as DAZ.
+known as the \emph{Development-for-Age Z-score (DAZ)}.
 }
 \details{
+Here are more details on the reference population:
 The \code{"dutch"} references were calculated from the SMOCC data, and cover
 age range 0-2.5 years (van Buuren, 2014).
 The \code{"gcdg"} references were calculated from the 15 cohorts of the
@@ -47,9 +50,13 @@ GCDG-study, and cover age range 0-5 years (Weber, 2019).
 The \code{"phase1"} references were calculated from the GSED Phase 1 validation
 data (GSED-BGD, GSED-PAK, GSED-TZA) cover age range 2w-3.5 years. The
 age range 3.5-5 yrs is linearly extrapolated and are only indicative.
+The \code{"preliminary_standards"} were calculated from the GSED Phase 1 validation
+data (GSED-BGD, GSED-PAK, GSED-TZA) using a subset of children with
+covariate indicating healthy development.
 }
 \examples{
-head(builtin_references)
+# get an overview of available references per key
+table(builtin_references$population, builtin_references$key)
 }
 \references{
 Cole TJ, Green PJ (1992). Smoothing reference centile curves: The LMS
