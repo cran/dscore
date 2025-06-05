@@ -13,10 +13,12 @@ dscore(
   xname = "age",
   xunit = c("decimal", "days", "months"),
   prepend = NULL,
-  itembank = dscore::builtin_itembank,
+  itembank = NULL,
   metric = c("dscore", "logit"),
   prior_mean = NULL,
+  prior_mean_NA = NULL,
   prior_sd = NULL,
+  prior_sd_NA = NULL,
   transform = NULL,
   qp = NULL,
   dec = c(2L, 3L),
@@ -33,10 +35,12 @@ dscore_posterior(
   xname = "age",
   xunit = c("decimal", "days", "months"),
   prepend = NULL,
-  itembank = dscore::builtin_itembank,
+  itembank = NULL,
   metric = c("dscore", "logit"),
   prior_mean = NULL,
+  prior_mean_NA = NULL,
   prior_sd = NULL,
+  prior_sd_NA = NULL,
   transform = NULL,
   qp = NULL,
   dec = c(2L, 3L),
@@ -46,7 +50,7 @@ dscore_posterior(
 )
 }
 \arguments{
-\item{data}{A \code{data.frame} with the data.
+\item{data}{A \code{data.frame} or \code{matrix} with the data.
 A row collects all observations made on a child on a set of
 milestones administered at a given age. The function calculates
 a D-score for each row. Different rows can correspond to different
@@ -58,13 +62,18 @@ numerically as \code{1} (pass) and \code{0} (fail). By default,
 D-score calculation is done on all items found in the data
 that have a difficulty parameter under the specified \code{key}.}
 
-\item{key}{String. Name of the key that bundles the difficulty estimates
-pertaining one the same Rasch model. View \code{builtin_keys} for an overview
-of the available keys.}
+\item{key}{String. They key identifies 1) the difficulty estimates
+pertaining to a particular Rasch model, and 2) the prior mean and standard
+deviation of the prior distribution for calculating the D-score.
+The default key \code{NULL} sets \code{key = "gsed2406"}.
+View \code{builtin_keys} for an overview of the available keys.}
 
-\item{population}{String. The name of the reference population to calculate DAZ.
-Use \code{unique(builtin_references$population)} to obtain the set of currently
-available reference populations.}
+\item{population}{String. The name of the reference population to calculate
+DAZ.
+Use \code{with(builtin_references, table(key, population))} to see which
+built-in references are available for \code{key - population} combinations.
+If not specified, the function set the default population as
+\code{builtin_keys$base_population[key == builtin_keys$key]}.}
 
 \item{xname}{A string with the name of the age variable in
 \code{data}. The default is \code{"age"}. Do not round age.}
@@ -77,8 +86,8 @@ The default \code{"decimal"} corresponds to decimal age in years.}
 be prepended to the returned data frame. This is useful for copying
 columns from data into the result, e.g., for matching.}
 
-\item{itembank}{A \code{data.frame} with at least two columns
-named \code{item} and \code{tau}. By default, the function uses
+\item{itembank}{A \code{data.frame} with at least three columns named
+\code{key}, \code{item} and \code{tau}. By default, the function uses
 \code{dscore::builtin_itembank}. If you specify your own \code{itembank},
 then you should also provide the relevant \code{transform} and \code{qp} arguments.}
 
@@ -86,17 +95,37 @@ then you should also provide the relevant \code{transform} and \code{qp} argumen
 \code{"logit"}, signalling the metric in which ability is estimated.
 \code{daz} is not calculated for the logit scale.}
 
-\item{prior_mean}{A string or numeric scalar. If a string, it should
-refer to a column name in \code{data} with user-supplied values of the prior mean
-for each observation. If a numeric scalar, it is used as the prior mean
-for all observations. The default (\code{NULL}) will consult the
-\code{base_population} field in \code{builtin_keys}, and use the corresponding
-median of that reference as prior mean for the D-score.}
+\item{prior_mean}{\code{NULL} (default), a string, a numeric scalar, or
+a numeric vector with  \code{nrow(data)} elements. The default value
+\code{NULL} will consult the \code{base_population} field in \code{builtin_keys},
+and use the corresponding median of that reference as prior mean for
+the D-score. The string should refer to a column name in \code{data}
+that contains user-supplied values of the prior mean for each observation.
+A numeric scalar will be expanded to all observations. A numeric vector
+will be used as is.}
 
-\item{prior_sd}{A string or a numeric scalar. If a string, it should
-refer to a column name in \code{data} with user-supplied values of the prior
-sd for all observations. If a numeric scalar, it is used as the prior sd
-for all observations. The default (\code{NULL}) uses a values of 5.}
+\item{prior_mean_NA}{\code{NULL} (default) or a scalar numeric, representing
+the prior mean for observations with missing ages. By default, D-scores
+with missing ages will we \code{NA}. We suggest setting
+\code{prior_mean_NA = 50} as a reasonable choice for samples between 0-3
+years. The argument is ignored if \code{prior_mean} is specified per
+observation, which gives you full control of priors for observations
+with missing ages.}
+
+\item{prior_sd}{\code{NULL} (default), a string, a numeric scalar, or
+a numeric vector with \code{nrow(data)} elements. The default (\code{NULL})
+uses a value of 5 for all ages. The string should refer to a column
+name in \code{data} that contains user-supplied values of the prior sd
+for each observation. A numeric scalar will be expanded to all
+observations. A numeric vector will be used as is.}
+
+\item{prior_sd_NA}{\code{NULL} (default) or a scalar numeric, representing
+the prior sd for observations with missing ages. By default, D-scores
+with missing ages will we \code{NA}. We suggest setting
+\code{prior_sd_NA = 20} as a reasonable choice for samples between 0-3
+years. The argument is ignored if \code{prior_sd} is specified per
+observation, which gives you full control of priors for observations
+with missing ages.}
 
 \item{transform}{Numeric vector, length 2, containing the intercept
 and slope of the linear transform from the logit scale into the
@@ -130,18 +159,31 @@ Optionally, the first block of columns can be copied to the
 result by using \code{prepend}. The second block consists of the
 following columns:\tabular{ll}{
    Name \tab Label \cr
-   \code{a} \tab Decimal age \cr
+   \code{a} \tab Decimal age (years) \cr
    \code{n} \tab Number of items with valid (0/1) data \cr
    \code{p} \tab Percentage of passed milestones \cr
-   \code{d} \tab Ability estimate, mean of posterior \cr
+   \code{d} \tab D-score, mean of posterior distribution \cr
    \code{sem} \tab Standard error of measurement, standard deviation of the posterior \cr
    \code{daz} \tab D-score corrected for age, calculated in Z-scale (for metric \code{"dscore"}) \cr
 }
 
 
-For more detail, the \code{dscore_posterior()} function returns a data frame with
-\code{nrow(data)} rows and \code{length(qp)} plus prepended columns with the
-full posterior density of the D-score at each quadrature point.
+The D-score in column \code{d} is a linear scale, with values usually ranging
+from 0 to 100. The D-score is \code{NA} if age is missing or if age is lower
+than -1/12. It is possible to calculate D-scores for cases with missing ages
+by setting \code{prior_mean_NA} and \code{prior_sd_NA} to some reasonable value, e.g.,
+\code{prior_mean_NA = 50} and \code{prior_sd_NA = 20}, for the sample at hand.
+
+The SEM is a positive number that quantifies the uncertainty of the D-score.
+It is \code{NA} if the D-score is \code{NA}.
+
+The DAZ in column \code{daz} is a Z-score that corrects the D-score for age. It
+is \code{NA} when there are no reference values for the given age, or when
+the D-score is extremely unlikely to be valid at the given age.
+
+Advanced applications: The \code{dscore_posterior()} function returns a
+data frame with \code{nrow(data)} rows and \code{length(qp)} plus prepended columns
+with the full posterior density of the D-score at each quadrature point.
 If no valid responses are found, \code{dscore_posterior()} returns the
 prior density. Versions prior to 1.8.5 returned a \code{matrix} (instead of
 a \code{data.frame}). Code that depends on the result being a \code{matrix} may break
@@ -178,7 +220,7 @@ the advice is to use the default, which currently is \code{"gsed2406"}.
 
 The default starting prior is a mean calculated from a so-called
 "Count model" that describes mean D-score as a function of age. The
-The Count models are implemented in the function \verb{[count_mu()]}.
+The Count models are implemented in the function \verb{[get_mu()]}.
 By default, the spread of the starting prior
 is 5 D-score points around the mean D-score, which corresponds to
 approximately 1.5 to 2 times the normal spread of child of a given age. The

@@ -4,6 +4,42 @@ editor_options:
     wrap: 72
 ---
 
+# dscore 1.10.0
+
+### Overview
+
+This release brings two enhancements to the `dscore` package:
+
+- More flexible options for specifying the prior mean and prior standard deviation for the D-score calculation, and a new vignette to demonstrate these options.
+- An updated reference of `preliminary_standards` based on a larger sample from Bangladesh.
+
+### Major changes
+
+- Refreshes `preliminary_standards` with a larger sample from Bangladesh
+- Implements new and more friendly options that add increased flexibility to specify prior mean and prior standard deviation for the D-score calculation
+- Changes the default `prior_mean_NA` and `prior_sd_NA` to `NULL` (was 50 and 20). This is a safer option to handle missing ages. The user can emulate the previous automatic behavior (introduced in intermediate version dscore 1.9.2) by setting the `prior_mean_NA = 50` and `prior_sd_NA = 20` arguments to the `dscore()` function.
+- Rebrands `count_mu()` as function `get_mu()` to extract the prior mean from a reference table. Deprecates `count_mu()`.
+- Adds a vignette "Custom Priors (Advanced)" to demonstrate the new options for specifying the prior mean and prior standard deviation
+- Turns ages in `get_mu()` below -1/12 into `NA` values
+
+### Minor changes 
+
+- Changes `warning("Reference XX for key YY not found."` into `warning("Reference XX for key YY not found. Using default."` 
+- Returns `preliminary_standards` from key `gsed2406` in the above case.
+- Some minor edits to the "Understanding and using DAZ" vignette
+- Turns `Inf` values in `daz()` into `NA` values
+- Turns `NaN` values in SEM into `NA` values
+- `dscore()` and `dscore_posterior()` now accept a matrix as input
+- Improves documentation for interpretation of `NA`s in D-score, SEM and DAZ
+- Adds a vignette "Understanding and using DAZ" to explain and highlight DAZ (contributed Jonathan Seiden)
+- Fixes typos in vignettes
+- Adds tests in `testthat/test-prior.R`
+- Repairs bug that occured when no items was found resulting in error "cannot coerce class 'function' to a data.frame" in `dscore()`
+- Restores a datafile `data-raw/data/keys/items_gs1_gl1.txt` that was accidentally removed in a previous release
+- Evades superfluous warning 'There was 1 warning in `mutate()`. In argument: `daz = daz(...)`' 
+- Makes the `key` column compulsory in the `itembank` argument, and adds a check on proper column names
+- Improves documentation for the `population` and `key` arguments
+
 # dscore 1.9.0
 
 ### Overview

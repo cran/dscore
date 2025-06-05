@@ -1,17 +1,17 @@
-#' Median D-score from the default references for the given key
+#' Median D-score from the base population for a given key
 #'
 #' Returns the age-interpolated median of the D-score of the default
 #' reference for a given key.
 #'
-#' Do not use this function if you want the median D-score for a specific
-#' reference.
+#' Use `get_reference()` for more options.
 #' @param t Decimal age, numeric vector
 #' @param key Character, key of the reference population
+#' @param prior_mean_NA Numeric, prior mean when age is missing
 #' @return
 #' A vector of length `length(t)` with the median of the default reference
 #' population for the key.
 #' @export
-count_mu <- function(t, key) {
+get_mu <- function(t, key, prior_mean_NA = NA_real_) {
   # calculate P50 from the default population for the key
   init <- init_key(key = key, population = NULL, transform = NULL, qp = NULL)
   population <- init$population
@@ -21,8 +21,31 @@ count_mu <- function(t, key) {
                "phase1" = count_mu_phase1(t),
                "preliminary_standards" = count_mu_preliminary_standards(t),
                rep(NA_real_, length(t)))
+  mu[is.na(t)] <- prior_mean_NA
   return(mu)
 }
+
+#' Median D-score from the default references for the given key
+#'
+#' Returns the age-interpolated median of the D-score of the default
+#' reference for a given key.
+#'
+#' Do not use this function if you want the median D-score for a specific
+#' reference.
+#'
+#' DEPRECATED in dscore 1.9.6
+#' @param t Decimal age, numeric vector
+#' @param key Character, key of the reference population
+#' @param prior_mean_NA Numeric, prior mean when age is missing
+#' @return
+#' A vector of length `length(t)` with the median of the default reference
+#' population for the key.
+#' @export
+count_mu <- function(t, key, prior_mean_NA = NA_real_) {
+  .Deprecated("get_mu")
+  get_mu(t, key, prior_mean_NA)
+}
+
 
 #' Median of Dutch references
 #'
@@ -121,6 +144,7 @@ count_mu_phase1 <- function(t) {
 count_mu_preliminary_standards <- function(t) {
 
   to <- !is.na(t)
+  t0 <- to & t < -1/12
   t1 <- to & t <= 0.75
   t2 <- to & t > 0.75 & t <= 3.5
   t3 <- to & t > 3.5
@@ -136,6 +160,7 @@ count_mu_preliminary_standards <- function(t) {
   # t[t3] <- suppressWarnings(61.5214 + 4.4309 * t[t3])
 
   # Round 2 model
+  t[t0] <- NA_real_
   t[t1] <- suppressWarnings(24.522 + 23.886 * t[t1] + 9.190 * log(t[t1] + 0.2))
   t[t2] <- suppressWarnings(18.434 - 9.206 * t[t2] + 61.255 * log(t[t2] + 0.92))
   t[t3] <- suppressWarnings(62.6268 + 4 * t[t3])

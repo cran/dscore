@@ -2,11 +2,11 @@
 knitr::opts_chunk$set(echo = TRUE)
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  install.packages("dscore")
+# install.packages("dscore")
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  install.packages("remotes")
-#  remotes::install_github("d-score/dscore")
+# install.packages("remotes")
+# remotes::install_github("d-score/dscore")
 
 ## ----include=FALSE------------------------------------------------------------
 stopifnot(packageVersion("dscore") >= "1.8.0")

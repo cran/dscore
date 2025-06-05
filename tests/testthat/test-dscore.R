@@ -8,6 +8,7 @@ data <- data.frame(
   ddigmd053 = c(NA, 0, 0, 1, 0, 0, 1, 1, 0, 1)
 )
 
+expect_silent(dscore(data, items = character(0)))
 
 # explicit key "gsed2212"
 expected_d <- c(NA, NA, 6.61, 5.60, 9.09, 9.09, 9.09, 9.09, 15.30, 15.30)
@@ -55,8 +56,8 @@ test_that("produces expected D-scores - key dutch", {
 
 test_that("Silently handles outside item code", {
   expect_silent(dscore(data,
-    items = c(items[1:2], "gpagmc013"),
-    algorithm = "1.8.7"
+                       items = c(items[1:2], "gpagmc013"),
+                       algorithm = "1.8.7"
   ))
 })
 
@@ -70,12 +71,12 @@ test_that("handles zero rows", {
 # --- test negative ages
 # dscore, gsed lexicon
 data <- data.frame(
-  age = rep(-0.26, 10),
+  age = c(-0.26, -0.26, NA, 1000, 0.5, -100, Inf, -Inf, 0, 1),
   ddifmd001 = c(NA, NA, 0, 0, 0, 1, 0, 1, 1, 1),
   ddicmm029 = c(NA, NA, NA, 0, 1, 0, 1, 0, 1, 1),
-  ddigmd053 = c(NA, 0, 0, 1, 0, 0, 1, 1, 0, 1)
+  ddigmd053 = c(NA, 0, 0, 1, 0, 0, 1, 1, 1, 1)
 )
-test_that("silently handles negative ages", {
+test_that("silently handles out-of-range ages", {
   expect_silent(dscore(data, key = "dutch"))
 })
 
@@ -92,23 +93,29 @@ my_itembank <- data.frame(
   item = items,
   tau = get_tau(items = items, key = "dutch")
 )
+my_reference <- builtin_references[builtin_references$key == "dutch", ]
+my_reference$key <- "mykey"
 
 # externally specified transformation
 # transform <- c(0, 1)
 # transform <- c(0, 2)
-# transform <- c(50, 3)
+transform <- c(50, 3)
+qp <- -10:100
 
-# algorithm <- "1.8.7"
-# zd <- dscore(data,
-#   items = items, dec = 4, metric = "dscore",
-#   itembank = keyd, key = "temp", population = "dutch",
-#   transform = transform, qp = qp, algorithm = algorithm
-# )
-# zl <- dscore(data,
-#   items = items, dec = 4, metric = "logit",
-#   itembank = keyd, key = "temp", population = "dutch",
-#   transform = transform, qp = qp, algorithm = algorithm
-# )
+algorithm <- "1.8.7"
+algorithm <- "current"
+zd <- dscore(data,
+             items = items, dec = 4, metric = "dscore",
+             itembank = my_itembank, transform = transform, qp = qp,
+             key = "mykey", population = "dutch",
+             algorithm = algorithm,
+             verbose = TRUE
+)
+zl <- dscore(data,
+             items = items, dec = 4, metric = "logit",
+             itembank = my_itembank, key = "mykey", transform = transform, qp = qp,
+             algorithm = algorithm
+)
 
 lastkey <- builtin_keys[nrow(builtin_keys), ]
 transform <- c(lastkey$intercept, lastkey$slope)
@@ -139,9 +146,13 @@ test_that("D-score difference at uneven rows (with start 0) is higher than on un
   expect_gt(zp0$d[9] - zp1$d[9], zp0$d[10] - zp1$d[10])
 })
 
-test_that("count_mu_phase() handles missing ages", {
-  expect_silent(dscore::count_mu(t = c(NA, NA), key = "preliminary_standards"))
-  expect_silent(dscore::count_mu(t = c(NA, -3, 1:3, NA), key = "preliminary_standards"))
+test_that("get_mu() handles missing ages", {
+  expect_silent(get_mu(t = c(NA, NA),
+                       key = "gsed2406",
+                       prior_mean_NA = 50))
+  expect_silent(get_mu(t = c(NA, -3, 1:3, NA),
+                       key = "gsed2406",
+                       prior_mean_NA = 50))
 })
 
 
