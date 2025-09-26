@@ -1,7 +1,7 @@
 Package: dscore
 Type: Package
 Title: D-Score for Child Development
-Version: 1.10.0
+Version: 1.11.0
 Authors@R: c(person("Stef", "van Buuren", email = "stef.vanbuuren@tno.nl", role = c("cre", "aut")), 
              person("Iris", "Eekhout", email = "iris.eekhout@tno.nl", role = "aut"),
              person("Arjan", "Huizing", email = "arjan.huizing@tno.nl", role = "aut"),
@@ -19,20 +19,19 @@ LinkingTo: Rcpp, RcppArmadillo
 Suggests: ggplot2, kableExtra, knitr, lme4, patchwork, rmarkdown,
         testthat
 Encoding: UTF-8
-License: AGPL-3
+License: Apache License (>= 2)
 LazyData: TRUE
 VignetteBuilder: knitr
 NeedsCompilation: yes
 URL: https://github.com/d-score/dscore, https://d-score.org/dscore/,
         https://d-score.org/dbook1/
 BugReports: https://github.com/d-score/dscore/issues
-Copyright: Stef van Buuren, Iris Eekhout, Arjan Huizing
-RoxygenNote: 7.3.2
-Packaged: 2025-06-05 05:35:54 UTC; buurensv
+RoxygenNote: 7.3.3
+Packaged: 2025-09-26 12:30:05 UTC; buurensv
 Author: Stef van Buuren [cre, aut],
   Iris Eekhout [aut],
   Arjan Huizing [aut],
   Jonathan Seiden [aut]
 Maintainer: Stef van Buuren <stef.vanbuuren@tno.nl>
 Repository: CRAN
-Date/Publication: 2025-06-05 05:50:02 UTC
+Date/Publication: 2025-09-26 12:40:07 UTC

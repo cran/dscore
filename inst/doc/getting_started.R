@@ -7,10 +7,11 @@ suppressPackageStartupMessages(library(ggplot2))
 ## ----graphkey, fig.width = 7, fig.height = 5, echo = FALSE--------------------
 library(dscore)
 ib <- builtin_itembank |>
-  filter(key == "gsed2212") |>
+  filter(key == "gsed2406") |>
   mutate(
     a = get_age_equivalent(
-      items = item, pct = 50,
+      items = item,
+      pct = 50,
       itembank = builtin_itembank
     )$a,
     a = a * 12
@@ -22,7 +23,8 @@ ggplot(ib, aes(x = a, y = instrument, group = instrument)) +
   scale_y_discrete(limits = rev(unique(ib$instrument)), name = "") +
   scale_x_continuous(
     limits = c(0, 60),
-    breaks = seq(0, 60, 12), name = "Age (months)"
+    breaks = seq(0, 60, 12),
+    name = "Age (months)"
   ) +
   geom_point(pch = 3, size = 1, colour = "blue") +
   theme_light() +
@@ -47,8 +49,11 @@ get_labels(items)
 
 ## ----smalldataset-------------------------------------------------------------
 data <- data.frame(
-  id = c(1, 1, 2), age = c(1, 1.6, 0.9), mot1 = c(1, NA, NA),
-  mot2 = c(0, 1, 1), mot3 = c(NA, 0, 1)
+  id = c(1, 1, 2),
+  age = c(1, 1.6, 0.9),
+  mot1 = c(1, NA, NA),
+  mot2 = c(0, 1, 1),
+  mot3 = c(NA, 0, 1)
 )
 data
 
@@ -62,7 +67,7 @@ data
 head(milestones[, c(1, 3, 4, 9:14)])
 
 ## -----------------------------------------------------------------------------
-ds <- dscore(milestones)
+ds <- dscore(milestones, population = "dutch", key = "dutch")
 dim(ds)
 
 ## -----------------------------------------------------------------------------
@@ -75,27 +80,55 @@ md <- cbind(milestones, ds)
 library(ggplot2)
 library(dplyr)
 
-r <- builtin_references |>
-  filter(population == "dutch") |>
-  select(age, SDM2, SD0, SDP2)
+# Prepare the reference ribbon data: sort by age and convert months → years
+r <- builtin_references %>%
+  filter(population == "dutch" & key == "dutch") %>%
+  transmute(age_years = age, SDM2, SD0, SDP2) %>%
+  arrange(age_years)
 
-ggplot(md, aes(x = a, y = d, group = id, color = sex)) +
+ggplot(md, aes(x = a, y = d, group = id, colour = sex)) +
   theme_light() +
-  theme(legend.position = c(.85, .15)) +
-  theme(legend.background = element_blank()) +
-  theme(legend.key = element_blank()) +
-  annotate("polygon",
-    x = c(r$age, rev(r$age)),
-    y = c(r$SDM2, rev(r$SDP2)), alpha = 0.1, fill = "green"
+  theme(
+    legend.position = c(0.85, 0.15),
+    legend.background = element_blank(),
+    legend.key = element_blank()
   ) +
-  annotate("line", x = r$age, y = r$SDM2, lwd = 0.3, alpha = 0.2, color = "green") +
-  annotate("line", x = r$age, y = r$SDP2, lwd = 0.3, alpha = 0.2, color = "green") +
-  annotate("line", x = r$age, y = r$SD0, lwd = 0.5, alpha = 0.2, color = "green") +
+  geom_ribbon(
+    data = r,
+    inherit.aes = FALSE,
+    aes(x = age_years, ymin = SDM2, ymax = SDP2),
+    fill = "green",
+    alpha = 0.1
+  ) +
+  geom_line(
+    data = r,
+    inherit.aes = FALSE,
+    aes(x = age_years, y = SDM2),
+    linewidth = 0.3,
+    alpha = 0.6,
+    colour = "green"
+  ) +
+  geom_line(
+    data = r,
+    inherit.aes = FALSE,
+    aes(x = age_years, y = SDP2),
+    linewidth = 0.3,
+    alpha = 0.6,
+    colour = "green"
+  ) +
+  geom_line(
+    data = r,
+    inherit.aes = FALSE,
+    aes(x = age_years, y = SD0),
+    linewidth = 0.5,
+    alpha = 0.8,
+    colour = "green"
+  ) +
   coord_cartesian(xlim = c(0, 2.5)) +
-  ylab(expression(paste(italic(D), "-score", sep = ""))) +
-  xlab("Age (in years)") +
+  ylab(expression(italic(D) * "-score")) +
+  xlab("Age (years)") +
   scale_color_brewer(palette = "Set1") +
-  geom_line(lwd = 0.1) +
+  geom_line(linewidth = 0.1) +
   geom_point(size = 1)
 
 ## ----graphDAZ, fig.width = 7, fig.height = 5----------------------------------
@@ -105,8 +138,13 @@ ggplot(md, aes(x = a, y = daz, group = id, color = factor(sex))) +
   theme(legend.background = element_blank()) +
   theme(legend.key = element_blank()) +
   scale_color_brewer(palette = "Set1") +
-  annotate("rect",
-    xmin = -Inf, xmax = Inf, ymin = -2, ymax = 2, alpha = 0.1,
+  annotate(
+    "rect",
+    xmin = -Inf,
+    xmax = Inf,
+    ymin = -2,
+    ymax = 2,
+    alpha = 0.1,
     fill = "green"
   ) +
   coord_cartesian(
@@ -122,9 +160,11 @@ ggplot(md, aes(x = a, y = daz, group = id, color = factor(sex))) +
 ggplot(md) +
   theme_light() +
   scale_fill_brewer(palette = "Set1") +
-  geom_density(aes(x = daz, group = sex, fill = sex),
+  geom_density(
+    aes(x = daz, group = sex, fill = sex),
     alpha = 0.4,
-    adjust = 1.5, color = "transparent"
+    adjust = 1.5,
+    color = "transparent"
   ) +
   xlab("DAZ")
 

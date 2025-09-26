@@ -4,6 +4,48 @@ editor_options:
     wrap: 72
 ---
 
+# dscore 1.11.0
+
+### Overview
+
+This release brings the following enhancements to the `dscore` package:
+
+- Adds new item codes for GSED LF and GSED SF
+- Better support for D-score calculation using Bayley III
+- Uses a more permissive open source license
+
+### Major changes
+
+- Adds item names starting with `lf` and `sf` to `builtin_itemtable` to refer to GSED LF and GSED SF, respectively
+- Replaces the `by3` key in `gsed2212` and `gsed2406`. The replacement matches many more by3 items (172 instead of 67), especially for younger children. Compared to the previous by3 key, it raises the D-score estimate for by3 by approximately 2.6 D.
+- Updates the LICENSE from AGPL to the permissive Apache 2.0 to conform to Gates Foundation Open Access policy
+
+### Minor changes
+
+- Adds support to calculate DAZ for children < 2 weeks using the reference `preliminary_standards`
+- Makes `rename_vector()` part of the `dscore` package (moved from the gsedread package)
+- Updates the getting started vignette.
+- Changes deprecated `arma::is_finite(val)` to `std::isfinite(val)` to adhere to CRAN policy
+- Rebuilds `builtin_itemtable` to resolve problems with SF items 88 and 89 and LF B43-B51.
+- Correct description of A45 Stand on 1 foot < 5 seconds
+- Extends the item table with SF items with mode s (self-report)
+  + Mode "s" is supported in the `gsed3`, `gsed2` and `gsed` lexicons
+  + Adds item with mode "s" and "gs1" instrument codes
+  + NOTE: there are no gpa-items with mode "s" (gsed2 lexicon)
+- It corrects an error in the definition of the gpa item names:
+  + Renames `gpaclc088` --> `gpaclc089` (Can you child say five or more separate words)
+  + Renames `gpasec089` --> `gpasec088` (Is your child able to pee or poo)
+
+### Breaking changes
+
+- Retires the key `gsed2212` (soft deprecation). This key is identical to `gsed2406` (the current default), except that it defines its default `population` as `phase1` instead of `preliminary_standards`. If you want the old behavior, specify `key = "gsed2406"` in combination with `population = "phase1"`. The key `gsed2212` will be removed in a future release.
+
+### For developers
+
+- Adds `.toml` and `.vscode` file` to enforce air formatting
+- Initializes air format on save
+
+
 # dscore 1.10.0
 
 ### Overview
