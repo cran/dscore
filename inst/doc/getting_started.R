@@ -39,7 +39,8 @@ decompose_itemnames(c("by3cgd018", "denfmd014"))
 
 ## ----table--------------------------------------------------------------------
 items <- get_itemnames()
-din <- decompose_itemnames(items)
+din <- decompose_itemnames(items) |>
+  dplyr::filter(!instrument %in% c("gsd", "gpa", "gto", "rap"))
 knitr::kable(with(din, table(instrument, domain)), format = "html") |>
   kableExtra::column_spec(1, monospace = TRUE)
 
@@ -172,6 +173,7 @@ ggplot(md) +
 summary(lm(daz ~ age * sex, data = md))
 
 ## ----multilevel---------------------------------------------------------------
-library(lme4)
+library(Matrix)
+library(lme4, quiet = TRUE)
 lmer(daz ~ 1 + age + sex + sex * age + (1 + age | id), data = md)
 

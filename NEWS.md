@@ -4,6 +4,29 @@ editor_options:
     wrap: 72
 ---
 
+# dscore 2.0.0
+
+### 🌍 D-score now powered by data from 7 countries!
+
+- The default key has been updated from `gsed2406` to `gsed2510`.
+  + `gsed2406` was built from data in three GSED countries.
+  + `gsed2510` is a major step forward: it incorporates the full validation study across seven countries (BGD, BRA, CHN, CIV, NLD, PAK, TZA), giving a richer and more robust foundation.
+
+- What does this mean for you?
+  + The effect on D-scores is generally modest: in 90% of cases the difference is less than 1 point, and almost never exceeds 2 points.
+  + If you need exact reproducibility with earlier calculations, you can always choose a previous key from `dscore::builtin_keys` and pass it explicitly via the key argument in `dscore::dscore()`.
+  + **NOTE:** To calculate D-scores from instruments other than GSED SF or GSED LF, specify `key = "gsed2406"` in your `dscore()` call. Support for additional instruments will be added over time.
+
+- What else is new?
+  + Removed legacy keys that are no longer useful
+  + Removed duplicated instrument codes
+  + Streamlined documentation and vignettes for easier navigation
+  + Laid the groundwork for extending D-score calculations to older children
+  + Now licensed under Apache 2.0 - making it easier to use, adapt, and integrate into your own applications
+
+- Not ready yet?
+  + Version 1.11.0 remains available as a stable fallback on CRAN, while version 2.0.0 introduces the new default key for future analyses.
+
 # dscore 1.11.0
 
 ### Overview
